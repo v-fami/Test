@@ -27,8 +27,7 @@ To capture diagnostic information to troubleshoot a crash or a hang of SSMS, fol
 
 3. Open the command prompt and run the following command.
 
-    ```
-    command prompt
+    ```console
     <PathToProcDumpFolder>\procdump.exe -e -h -ma -w ssms.exe
     ```
 
