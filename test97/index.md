@@ -1,48 +1,58 @@
 ---
-title: 'Administrar la conmutación por error del grupo de disponibilidad: SQL Server en Linux'
-description: ''
-author: MikeRayMSFT
-ms.author: mikeray
-ms.reviewer: vanto
-ms.date: 03/01/2018
-ms.topic: conceptual
-ms.prod: sql
-ms.technology: linux
-ms.assetid: ''
-ms.openlocfilehash: a13f9f3da00889323f3d971ffd801f1fa7d09890
-ms.sourcegitcommit: db9bed6214f9dca82dccb4ccd4a2417c62e4f1bd
-ms.translationtype: HT
-ms.contentlocale: es-ES
-ms.lasthandoff: 07/25/2019
-ms.locfileid: "68027218"
+title: 无法根据这些自变量推断出方法 "<methodname>" 中类型参数的数据类型, 因为可能存在多个类型
+ms.date: 07/20/2015
+f1_keywords:
+- bc36651
+- bc36654
+- vbc36651
+- vbc36654
+helpviewer_keywords:
+- BC36651
+- BC36654
+ms.assetid: d4bf408c-ca1f-44ad-855a-3df898de60c6
+ms.openlocfilehash: c0818d31bcc3b8ecfda42dac89496d58a339afce
+ms.sourcegitcommit: f20dd18dbcf2275513281f5d9ad7ece6a62644b4
+ms.translationtype: MT
+ms.contentlocale: zh-CN
+ms.lasthandoff: 07/30/2019
+ms.locfileid: "68631070"
 ---
-# <a name="always-on-availability-group-failover-on-linux"></a>Conmutación por error del grupo de disponibilidad Always On en Linux
+# <a name="data-types-of-the-type-parameters-in-method-methodname-cannot-be-inferred-from-these-arguments-because-more-than-one-type-is-possible"></a>无法根据这些自变量推断出方法 "\<>" 中类型参数的数据类型, 因为可能存在多个类型
 
+无法根据这些自变量推断出方法 "\<方法名称 >" 中类型参数的数据类型, 因为可能有多种类型。 显式指定数据类型可更正此错误。
 
+尝试使用类型推理功能在对泛型过程的调用中确定类型参数或参数的类型。 编译器发现一个或多个类型参数的多个可能的数据类型，并报告此错误。
 
-Dentro del contexto de un grupo de disponibilidad, el rol principal y el rol secundario de las réplicas de disponibilidad suelen ser intercambiables en un proceso denominado conmutación por error. Hay tres formas de conmutación por error: conmutación por error automática (sin pérdida de datos), conmutación por error manual planeada (sin pérdida de datos) y conmutación por error manual forzada (con posible pérdida de datos), normalmente denominada *conmutación por error forzada*. Las conmutaciones por error automáticas o manuales planeadas conservan todos los datos. Un grupo de disponibilidad conmuta por error en el nivel de la réplica de disponibilidad. Es decir, un grupo de disponibilidad conmuta por error en una de sus réplicas secundarias (el destino de la conmutación por error actual). 
+> [!NOTE]
+> 当无法指定实参时（例如，对于查询表达式中的查询运算符），显示的错误消息不包括第二个句子。
 
-Para obtener información general sobre la conmutación por error, vea [Conmutación por error y modos de conmutación por error](../database-engine/availability-groups/windows/failover-and-failover-modes-always-on-availability-groups.md).
+下面的代码演示了此错误。
 
-## <a name="failover"></a>Conmutación por error manual
+```vb
+Option Strict Off
+Module Module1
+    Sub Main()
+        '' Not valid.
+        'targetMethod(1, "2")
+    End Sub
 
-Use las herramientas de administración de clústeres para conmutar por error un grupo de disponibilidad administrado por un administrador de clústeres externo. Por ejemplo, si una solución usa Pacemaker para administrar un clúster de Linux, use `pcs` para realizar las conmutaciones por error manuales en RHEL o Ubuntu. En SLES, use `crm`. 
+    Sub targetMethod(Of T)(ByVal p1 As T, ByVal p2 As T)
+    End Sub
 
-> [!IMPORTANT]
-> En las operaciones normales, no conmute por error con las herramientas de administración de SQL Server o Transact-SQL, como SSMS o PowerShell. Cuando `CLUSTER_TYPE = EXTERNAL`, el único valor aceptable para `FAILOVER_MODE` es `EXTERNAL`. Con esta configuración, el administrador de clústeres externo ejecuta todas las acciones de conmutación por error manuales o automáticas. Para obtener instrucciones sobre cómo forzar la conmutación por error con una posible pérdida de datos, vea [Forzar la conmutación por error](#forceFailover).
+End Module
+```
 
-### <a name="a-namemanualfailovermanual-failover-steps"></a><a name="manualFailover">Pasos de una conmutación por error manual
+**错误 ID:** BC36654 (在[!INCLUDE[vbteclinq](~/includes/vbteclinq-md.md)]查询中) 和 BC36651 (在查询外)
 
-Para conmutar por error, la réplica secundaria que se convertirá en la réplica principal tiene que ser sincrónica. Si una réplica secundaria es asincrónica, [cambie el modo de disponibilidad](../database-engine/availability-groups/windows/change-the-availability-mode-of-an-availability-replica-sql-server.md).
+## <a name="to-correct-this-error"></a>更正此错误
 
-Conmute por error de forma manual en dos pasos.
+如果此错误出现在查询外，请尝试显式指定类型参数的数据类型：
 
-   Primero, [conmute por error de forma manual al mover el recurso del grupo de disponibilidad](#manualMove) desde el nodo del clúster propietario de los recursos a un nodo nuevo.
+```vb
+targetMethod(Of Integer)(1, "2")
+```
 
-   El clúster conmutará por error el recurso del grupo de disponibilidad y agregará una restricción de ubicación. Esta restricción configura el recurso para ejecutarse en el nuevo nodo. Quite esta restricción para conmutar por error correctamente en el futuro.
+## <a name="see-also"></a>请参阅
 
-   En segundo lugar, [quite la restricción de ubicación](#removeLocConstraint).
-
-#### <a name="a-namemanualmovestep-1-manually-fail-over-by-moving-availability-group-resource"></a><a name="manualMove">Paso 1. Conmutar por error de forma manual al mover el recurso de un grupo de disponibilidad
-
-Para conmutar por error de forma manual el recurso de un grupo de disponibilidad denominado *ag_cluster* a un nodo de clúster denominado *nodeName2*, ejecute el comando adecuado para su distribución:
+- [Option Strict 语句](../../visual-basic/language-reference/statements/option-strict-statement.md)
+- [Generic Procedures in Visual Basic](../../visual-basic/programming-guide/language-features/data-types/generic-procedures.md)
