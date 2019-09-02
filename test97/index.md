@@ -17,7 +17,7 @@ ms.contentlocale: zh-CN
 ms.lasthandoff: 07/30/2019
 ms.locfileid: "68631070"
 ---
-# <a name="data-types-of-the-type-parameters-in-method-methodname-cannot-be-inferred-from-these-arguments-because-more-than-one-type-is-possible"></a>无法根据这些自变量推断出方法 "\<>" 中类型参数的数据类型, 因为可能存在多个类型
+# <a name="data-types-of-the-type-parameters-in-method-methodname-cannot-be-inferred-from-these-arguments-because-more-than-one-type-is-possible"></a>无法根据这些自变量推断出方法 '\<>' 中类型参数的数据类型, 因为可能存在多个类型
 
 无法根据这些自变量推断出方法 "\<方法名称 >" 中类型参数的数据类型, 因为可能有多种类型。 显式指定数据类型可更正此错误。
 
