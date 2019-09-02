@@ -42,7 +42,7 @@ Module Module1
 End Module
 ```
 
-**错误 ID:** BC36654 (在[!INCLUDE[vbteclinq](~/includes/vbteclinq-md.md)]查询中) 和 BC36651 (在查询外)
+**错误 ID:** BC36654 ]查询中) 和 BC36651 (在查询外)
 
 ## <a name="to-correct-this-error"></a>更正此错误
 
