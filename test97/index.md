@@ -24,10 +24,10 @@
 </colgroup>  
 <thead>  
 <tr class="header">  
-<th align="left">Parameter</span></span></th>
-<th align="left"><span data-ttu-id="06e38-113">描述</span><span class="sxs-lookup"><span data-stu-id="06e38-113">Description</span></span></th>
-</tr>
-</thead>
+<th align="left">Parameter</span></span></th>  
+<th align="left"><span data-ttu-id="06e38-113">描述</span><span class="sxs-lookup"><span data-stu-id="06e38-113">Description</span></span></th>  
+</tr>  
+</thead>  
 <tbody>
 <tr class="odd">
 <td align="left"><p><span data-ttu-id="06e38-114">1</span><span class="sxs-lookup"><span data-stu-id="06e38-114">1</span></span></p></td>
