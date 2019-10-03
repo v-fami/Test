@@ -1,268 +1,76 @@
 ---
-title: Migración de recursos
-titleSuffix: Microsoft Cloud Adoption Framework for Azure
-description: Migración de recursos
-author: matticusau
-ms.author: mlavery
-ms.date: 08/08/2019
-ms.topic: conceptual
-ms.service: cloud-adoption-framework
-ms.subservice: migrate
-ms.custom: fasttrack-new, AQC
-ms.localizationpriority: high
-ms.openlocfilehash: d14ee6491e4fc804d6545c6708f1d27a44c83501
-ms.sourcegitcommit: d19e026d119fbe221a78b10225230da8b9666fe1
+title: Escapes de caracteres em expressões regulares do .NET
+description: Saiba mais sobre os caracteres especiais e caracteres de escape em expressões regulares do .NET.
+ms.date: 03/30/2017
+ms.technology: dotnet-standard
+dev_langs:
+- csharp
+- vb
+helpviewer_keywords:
+- unescaped characters
+- replacement patterns
+- characters, escapes
+- regular expressions, character escapes
+- escape characters
+- .NET Framework regular expressions, character escapes
+- constructs, character escapes
+ms.assetid: f49cc9cc-db7d-4058-8b8a-422bc08b29b0
+author: rpetrusha
+ms.author: ronpet
+ms.custom: seodec18
+ms.openlocfilehash: 248d434f7aad56d84d952fa27cf49f3d370f4a1c
+ms.sourcegitcommit: 68653db98c5ea7744fd438710248935f70020dfb
 ms.translationtype: HT
-ms.contentlocale: es-ES
-ms.lasthandoff: 09/24/2019
-ms.locfileid: "71224075"
+ms.contentlocale: pt-BR
+ms.lasthandoff: 08/22/2019
+ms.locfileid: "69934827"
 ---
-# <a name="migrate-assets-infrastructure-apps-and-data"></a>Migración de recursos (infraestructura, aplicaciones y datos)
-
-En esta fase del recorrido, se usa el resultado de la fase de evaluación para iniciar la migración del entorno. Esta guía ayuda a identificar las herramientas adecuadas para llegar a un "estado listo", incluidas herramientas nativas, herramientas de terceros y herramientas de administración de proyectos.
-
-# <a name="native-migration-toolstabtools"></a>[Herramientas de migración nativas](#tab/Tools)
-
-En las secciones siguientes se describen las herramientas de Azure nativas disponibles para realizar la migración o ayudar en ese proceso. Para información sobre cómo elegir las herramientas adecuadas para admitir los esfuerzos de migración, consulte la [Guía para la toma de decisiones de las herramientas de migración de la Plataforma de adopción de la nube](../../decision-guides/migrate-decision-guide/index.md).
-
-## <a name="azure-migrate"></a>Azure Migrate
-
-Azure Migrate ofrece una experiencia de migración unificada y extensible. Azure Migrate proporciona una experiencia dedicada única para hacer el seguimiento del recorrido de la migración en las fases de evaluación y migración a Azure. Ofrece la opción de usar las herramientas que prefiera y de hacer seguimiento del progreso de la migración en estas herramientas.
-
-Azure Migrate proporciona la funcionalidad siguiente:
-
-1. Funcionalidades mejoradas de evaluación y migración:
-    - Evaluaciones de Hyper-V.
-    - Evaluación mejorada de VMware.
-    - Migración sin agentes de máquinas virtuales de VMware a Azure.
-1. Evaluación unificada, migración y seguimiento del progreso.
-1. Enfoque ampliable con integración de ISV (como Cloudamize).
-
-Para realizar una migración mediante Azure Migrate siga estos pasos:
-
-1. Busque Azure Migrate en **Todos los servicios**. Seleccione **Azure Migrate** para continuar.
-1. Seleccione **Agregar una herramienta** para empezar el proyecto de migración.
-1. Seleccione la suscripción, el grupo de recursos y la geografía donde hospedar la migración.
-1. Seleccione **Seleccione una herramienta de evaluación** > **Azure Migrate: Server Assessment** >  **Siguiente**.
-1. Seleccione **Review + add tool(s)** (Revisar y agregar herramientas) y compruebe la configuración. Haga clic en **Add tool(s)** (Agregar herramientas) para iniciar el trabajo de crear el proyecto de migración y registrar las soluciones seleccionadas.
-
-<!-- TODO: TBA -->
-
-### <a name="read-more"></a>Más información
-
-- [Tutorial de Azure Migrate: Migración de servidores físicos o virtualizados a Azure](https://docs.microsoft.com/azure/migrate/tutorial-migrate-physical-virtual-machines)
-
-## <a name="azure-site-recovery"></a>Azure Site Recovery
-
-El servicio Azure Site Recovery puede administrar la migración de los recursos locales a Azure. También puede administrar y coordinar la recuperación ante desastres de máquinas virtuales locales y máquinas virtuales de Azure con fines de continuidad empresarial y recuperación ante desastres (BCDR).
-
-En los pasos siguientes se describe el proceso para usar Site Recovery para la migración:
-
-> [!TIP]
-> Estos pasos pueden diferir ligeramente según el escenario. Para obtener más información, consulte el artículo [Migración de máquinas locales a Azure](https://docs.microsoft.com/azure/site-recovery/migrate-tutorial-on-premises-azure).
-
-### <a name="prepare-azure-site-recovery-service"></a>Preparación del servicio Azure Site Recovery
-
-1. En Azure Portal, seleccione **+Crear un recurso > Herramientas de administración > Backup and Site Recovery**.
-1. Si todavía no crea un almacén de recuperación, complete el asistente para crear un recurso de **almacén de Recovery Services**.
-1. En el menú **Recurso**, seleccione **Site Recovery > Preparar infraestructura > Objetivo de protección**.
-1. En **Objetivo de protección**, seleccione el contenido que quiera migrar.
-    1. **VMware:** seleccione **To Azure > Yes, with VMware vSphere Hypervisor (En Azure > Sí, con VMware vSphere Hypervisor)** .
-    1. **Máquina física:** seleccione **To Azure > Not virtualized/Other (En Azure > No virtualizado/Otro)** .
-    1. **Hyper-V:** seleccione **To Azure > Yes, with Hyper-V (En Azure > Sí, con Hyper-V)** . Si VMM administra las máquinas virtuales de Hyper-V, seleccione **Sí**.
-
-### <a name="configure-migration-settings"></a>Configuración de valores de migración
-
-1. Configure el entorno de origen según corresponda.
-1. Configure el entorno de destino.
-    1. Haga clic en **Preparar infraestructura > Destino** y seleccione la suscripción de Azure que quiere usar.
-    1. Especifique el modelo de implementación de Resource Manager.
-    1. Site Recovery comprueba que tiene una o más redes y cuentas de Azure Storage compatibles.
-1. Configurar una directiva de replicación.
-1. Habilite la replicación.
-1. Ejecute una migración de prueba (conmutación por error de prueba).
-
-### <a name="migrate-to-azure-using-failover"></a>Migración a Azure mediante conmutación por error
-
-1. En **Configuración > Elementos replicados**, seleccione la máquina > **Conmutación por error**.
-1. En **Conmutación por error**, seleccione un **punto de recuperación** en el que realizar la conmutación por error. Seleccione el punto de recuperación más reciente.
-1. Configure cualquier opción de clave de cifrado que sea necesaria.
-1. Seleccione **Apague la máquina antes de comenzar con la conmutación por error**. Site Recovery intentará apagar las máquinas virtuales antes de desencadenar la conmutación por error. La conmutación por error continúa aunque se produzca un error de cierre. Puede seguir el progreso de la conmutación por error en la página Trabajos.
-1. Compruebe que la máquina virtual de Azure aparece en Azure según lo previsto.
-1. En **Elementos replicados**, haga clic con el botón derecho en la máquina virtual y elija **Completar migración**.
-1. Realice los pasos posteriores a la migración que sean necesarios (consulte la información pertinente que aparece en esta guía).
-
-::: zone target="chromeless"
-
-::: form action="Create[#create/Microsoft.RecoveryServices]" submitText="Create a Recovery Services vault" :::
-
-::: zone-end
-
-::: zone target="docs"
-
-Para más información, consulte:
-
-- [Migración de máquinas locales a Azure](https://docs.microsoft.com/azure/site-recovery/migrate-tutorial-on-premises-azure)
-
-::: zone-end
-
-## <a name="azure-database-migration-service"></a>Azure Database Migration Service
-
-Azure Database Migration Service es un servicio totalmente administrado que permite migraciones completas desde varios orígenes de base de datos hasta las plataformas de datos de Azure con un tiempo de inactividad mínimo (migraciones en línea). Azure Database Migration Service realiza todos los pasos requeridos. Puede iniciar sus proyectos de migración con la garantía de que el proceso aprovecha los procedimientos recomendados de Microsoft.
-
-### <a name="create-an-azure-database-migration-service-instance"></a>Creación de una instancia de Azure Database Migration Service
-
-Si es la primera vez que usa Azure Database Migration Service, debe registrar el proveedor de recursos para la suscripción de Azure:
-
-1. Seleccione **Todos los servicios**, luego **Suscripciones** y elija la suscripción de destino.
-1. Seleccione **Proveedores de recursos**.
-1. Busque `migration` y, a la derecha de **Microsoft.DataMigration**, seleccione **Registrar**.
-
-::: zone target="chromeless"
-
-::: form action="OpenBlade[#blade/Microsoft_Azure_Billing/SubscriptionsBlade]" submitText="Go to Subscriptions" :::
-
-::: zone-end
-
-Después de registrar el proveedor de recursos, puede crear una instancia de Azure Database Migration Service.
-
-1. Seleccione **+Crear un recurso** y busque **Azure Database Migration Service** en Marketplace.
-1. Complete el asistente para **Crear el servicio de migración** y seleccione **Crear**.
-
-El servicio ya está listo para migrar las bases de datos de origen compatibles (por ejemplo, SQL Server, MySQL, PostgreSQL o MongoDb).
-
-::: zone target="chromeless"
-
-::: form action="Create[#create/Microsoft.AzureDMS]" submitText="Create an Azure Database Migration Service instance" :::
-
-::: zone-end
-
-::: zone target="docs"
-
-Para más información, consulte:
-
-- [Introducción a Azure Database Migration Service](https://docs.microsoft.com/azure/dms/dms-overview).
-- [Creación de una instancia de Azure Database Migration Service](https://docs.microsoft.com/azure/dms/quickstart-create-data-migration-service-portal).
-- [Azure Migrate en Azure Portal](https://portal.azure.com/#blade/Microsoft_Azure_ManagementGroups/HierarchyBlade).
-- [Azure Portal: Creación de un proyecto de migración](https://portal.azure.com/#create/Microsoft.AzureMigrate).
-
-::: zone-end
-
-## <a name="data-migration-assistant"></a>Data Migration Assistant
-
-Data Migration Assistant (DMA) ayuda a actualizar a una plataforma de datos moderna mediante la detección de problemas de compatibilidad que pueden afectar la funcionalidad de la versión nueva de SQL Server o Azure SQL Database. DMA recomienda mejoras de rendimiento y confiabilidad para el entorno de destino y le permite migrar el esquema, los datos y objetos no contenidos desde el servidor de origen al servidor de destino.
-
+# <a name="character-escapes-in-regular-expressions"></a>Escapes de caracteres em expressões regulares
+A barra invertida (\\) em uma expressão regular indica uma das situações a seguir:  
+  
+- O caractere que segue é um caractere especial, conforme mostrado na tabela na seção a seguir. Por exemplo, `\b` é uma âncora que indica que uma correspondência da expressão regular deve começar em um limite de palavra, `\t` representa uma tabulação e `\x020` representa um espaço.  
+  
+- Um caractere que, caso contrário, seria interpretado como um constructo de linguagem sem escape deve ser interpretado literalmente. Por exemplo, uma chave (`{`) inicia a definição de um quantificador, mas uma barra invertida seguida por uma chave (`\{`) indica que o mecanismo de expressão regular deve corresponder à chave. Da mesma forma, uma única barra invertida marca o início de um constructo de linguagem com escape, mas duas barras invertidas (`\\`) indicam que o mecanismo de expressão regular deve corresponder à barra invertida.  
+  
 > [!NOTE]
-> En el caso de migraciones de gran tamaño (en términos de número y tamaño de bases de datos), se recomienda usar Azure Database Migration Service, que puede migrar bases de datos a escala.
->
+> Escapes de caracteres são reconhecidos em padrões de expressão regulares, mas não em padrões de substituição.  
+  
+## <a name="character-escapes-in-net"></a>Escapes de caracteres em .NET  
+ A tabela a seguir lista os escapes de caracteres com suporte das expressões regulares em .NET.  
+  
+|Caractere ou sequência|DESCRIÇÃO|  
+|---------------------------|-----------------|  
+|Todos os caracteres, exceto pelos seguintes:<br /><br /> . $ ^ { [ ( &#124; ) * + ? \ |Caracteres diferentes dos listados na coluna **Caractere ou sequência** não têm significado especial em expressões regulares; eles correspondem a si mesmos.<br /><br /> Os caracteres incluídos na coluna **Caractere ou sequência** são elementos especiais na linguagem de expressão regular. Para que seja feita a correspondência com eles em uma expressão regular, eles devem receber um escape ou ser incluídos em um [grupo de caracteres positivo](../../../docs/standard/base-types/character-classes-in-regular-expressions.md). Por exemplo, a expressão regular `\$\d+` ou `[$]\d+` corresponde a "$1200".|  
+|`\a`|Corresponde a um caractere de sino (alarme), `\u0007`.|  
+|`\b`|Em uma classe de caracteres `[`*character_group*`]`, corresponde a uma barra invertida, `\u0008`.  (Confira [Classes de caracteres](../../../docs/standard/base-types/character-classes-in-regular-expressions.md)). Fora de uma classe de caracteres, `\b` é uma âncora que corresponde a um limite de palavra. (Confira [Âncoras](../../../docs/standard/base-types/anchors-in-regular-expressions.md)).|  
+|`\t`|Corresponde a uma tabulação, `\u0009`.|  
+|`\r`|Corresponde a um retorno de carro, `\u000D`. Observe que `\r` não é equivalente ao caractere de nova linha, `\n`.|  
+|`\v`|Corresponde a uma tabulação vertical, `\u000B`.|  
+|`\f`|Corresponde a um avanço de página, `\u000C`.|  
+|`\n`|Corresponde a uma nova linha, `\u000A`.|  
+|`\e`|Corresponde a um escape, `\u001B`.|  
+|`\\` *nnn*|Corresponde a um caractere ASCII, em que *nnn* é composto por dois ou três dígitos que representam o código de caractere octal. Por exemplo, `\040` representa um caractere de espaço. Esse constructo é interpretado como referência inversa se tiver apenas um dígito (por exemplo, `\2`) ou se corresponder ao número de um grupo de captura. (Confira [Constructos de referência inversa](../../../docs/standard/base-types/backreference-constructs-in-regular-expressions.md)).|  
+|`\x` *nn*|Corresponde a um caractere ASCII, em que *nn* é um código de caractere hexadecimal com dois dígitos.|  
+|`\c` *X*|Corresponde a um caractere de controle ASCII, em que X é a letra do caractere de controle. Por exemplo, `\cC` é CTRL-C.|  
+|`\u` *nnnn*|Corresponde a uma unidade de código UTF-16 cujo valor é *nnnn* hexadecimal. **Observação:**  O .NET não dá suporte para o caractere de escape Perl 5 que é usado para especificar Unicode. O caractere de escape Perl 5 tem o formato `\x{` *####* `…}`, em que *####* `…` é uma série de dígitos hexadecimais. Em vez disso, use `\u`*nnnn*.|  
+|`\\`|Quando seguido por um caractere que não é reconhecido como um caractere com escape, corresponde a esse caractere. Por exemplo, `\*` corresponde a um asterisco (*) e é igual a `\x2A`.|  
+  
+## <a name="an-example"></a>Um Exemplo  
+ O exemplo a seguir ilustra o uso de escapes de caracteres em uma expressão regular. Ele analisa uma cadeia de caracteres que contém os nomes das maiores cidades do mundo e suas populações em 2009. O nome de cada cidade é separado da sua população por uma tabulação (`\t`) ou uma barra vertical (&#124; ou `\u007c`). Cidades individuais e suas populações são separadas umas das outras por um retorno de carro e uma alimentação de linha.  
+  
+ [!code-csharp[RegularExpressions.Language.Escapes#1](../../../samples/snippets/csharp/VS_Snippets_CLR/regularexpressions.language.escapes/cs/escape1.cs#1)]
+ [!code-vb[RegularExpressions.Language.Escapes#1](../../../samples/snippets/visualbasic/VS_Snippets_CLR/regularexpressions.language.escapes/vb/escape1.vb#1)]  
+  
+ A expressão regular `\G(.+)[\t|\u007c](.+)\r?\n` é interpretada conforme mostrado na tabela a seguir.  
+  
+|Padrão|DESCRIÇÃO|  
+|-------------|-----------------|  
+|`\G`|Inicia a correspondência onde a última correspondência terminou.|  
+|`(.+)`|Corresponde qualquer caractere uma ou mais vezes. Este é o primeiro grupo de captura.|  
+|`[\t\u007c]`|Corresponde a uma tabulação (`\t`) ou a uma barra vertical (&#124;).|  
+|`(.+)`|Corresponde qualquer caractere uma ou mais vezes. Este é o segundo grupo de captura.|  
+|`\r?\n`|Corresponde a zero ou uma ocorrência de um retorno de carro, seguida por uma nova linha.|  
+  
+## <a name="see-also"></a>Consulte também
 
-Para empezar a trabajar con Data Migration Assistant, siga estos pasos.
-
-1. Descargue e instale Data Migration Assistant desde el [Centro de descarga de Microsoft](https://www.microsoft.com/download/details.aspx?id=53595).
-1. Para crear una evaluación, haga clic en el icono **Nuevo (+)** y seleccione el tipo de proyecto **Evaluación**.
-1. Establezca el tipo de servidor de origen y de destino. Haga clic en **Create**(Crear).
-1. Configure las opciones de evaluación según sea necesario (se recomiendan todos los valores predeterminados).
-1. Agregue las bases de datos que se van a evaluar.
-1. Haga clic en **Siguiente** para iniciar la evaluación.
-1. Vea los resultados dentro del conjunto de herramientas de Data Migration Assistant.
-
-En el caso de una empresa, se recomienda seguir el enfoque descrito en el artículo sobre cómo [evaluar una empresa y consolidar informes de evaluación con DMA](https://docs.microsoft.com/sql/dma/dma-consolidatereports) para evaluar varios servidores, combinar los informes y, luego, usar los informes de Power BI proporcionados para analizar los resultados.
-
-Para obtener más información, incluidos los pasos de uso detallados, consulte:
-
-- [Información general de Data Migration Assistant](https://docs.microsoft.com/sql/dma/dma-overview).
-- [Evaluación de una empresa y consolidación de informes de evaluación con DMA](https://docs.microsoft.com/sql/dma/dma-consolidatereports).
-- [Análisis de informes de evaluación consolidados creados por Data Migration Assistant con Power BI](https://docs.microsoft.com/sql/dma/dma-powerbiassesreport).
-
-## <a name="sql-server-migration-assistant"></a>SQL Server Migration Assistant
-
-Microsoft SQL Server Migration Assistant (SSMA) es una herramienta diseñada para automatizar la migración de bases de datos a SQL Server desde Microsoft Access, DB2, MySQL, Oracle y SAP ASE. El concepto general es recopilar, evaluar y revisar con estas herramientas; sin embargo, debido a las variaciones del proceso para cada uno de los sistemas de origen, recomendamos revisar la [documentación detallada de SQL Server Migration Assistant](https://docs.microsoft.com/sql/ssma/sql-server-migration-assistant).
-
-Para más información, consulte:
-
-- [Información general de SQL Server Migration Assistant](https://docs.microsoft.com/sql/ssma/sql-server-migration-assistant).
-
-## <a name="database-experimentation-assistant"></a>Asistente para experimentación con bases de datos
-
-Asistente para experimentación con bases de datos (DEA) es una nueva solución de pruebas A/B para las actualizaciones de SQL Server. Ayudará a evaluar una versión de SQL de destino para una carga de trabajo determinada. Los clientes que actualizan de versiones anteriores de SQL Server (SQL Server 2005 y versiones posteriores) a cualquier versión nueva de SQL Server pueden usar estas métricas de análisis.
-
-El Asistente para experimentación con bases de datos contiene estas actividades de flujo de trabajo:
-
-- **Captura:** el primer paso de las pruebas A/B de SQL Server es capturar un seguimiento en el servidor de origen. Por lo general, el servidor de origen es el servidor de producción.
-- **Reproducción:** el segundo paso de las pruebas A/B de SQL Server es reproducir el archivo de seguimiento que se capturó en los servidores de destino. Luego, recopile seguimientos amplios a partir de las reproducciones para el análisis.
-- **Análisis:** el último paso es generar un informe de análisis mediante el uso de los seguimientos de reproducción. El informe de análisis puede ayudarlo a obtener información sobre las implicaciones de rendimiento del cambio propuesto.
-
-Para más información, consulte:
-
-- [Información general del Asistente para experimentación con bases de datos](https://docs.microsoft.com/sql/dea/database-experimentation-assistant-overview).
-
-## <a name="cosmos-db-data-migration-tool"></a>Herramienta de migración de datos de Cosmos DB
-
-La herramienta de migración de datos de Azure Cosmos DB puede importar datos desde diversos orígenes a colecciones y tablas de Azure Cosmos DB. Puede importar archivos JSON, archivos CSV, SQL, MongoDB, Azure Table Storage, Amazon DynamoDB e incluso colecciones de SQL API de Azure Cosmos DB. También se puede utilizar la herramienta de migración de datos al migrar de una colección de partición única a una colección de varias particiones de la API de SQL.
-
-Para más información, consulte:
-
-- [Herramienta de migración de datos de Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/import-data)
-
-# <a name="third-party-migration-toolstabthird-party-tools"></a>[Herramientas de migración de terceros](#tab/third-party-tools).
-
-Hay varias herramientas de migración de terceros y servicios de ISV que pueden ayudarlo con el proceso de migración. Cada uno ofrece distintas ventajas y fortalezas. Estas herramientas son:
-
-## <a name="cloudamize"></a>Cloudamize
-
-Cloudamize es un servicio de ISV que abarca todas las fases de la estrategia de migración.
-
-[Más información](https://www.cloudamize.com)
-
-## <a name="zerto"></a>Zerto
-
-Zerto proporciona la replicación virtual que controla tanto entornos de Microsoft Hyper-V como de VMware vSphere.
-
-[Más información](https://www.zerto.com/solutions/use-cases/data-center-migration-software)
-
-## <a name="carbonite"></a>Carbonite
-
-Carbonite proporciona soluciones de migración de datos y servidores para migrar cargas de trabajo hacia, desde o entre cualquier entorno físico, virtual o basado en la nube.
-
-[Más información](https://www.carbonite.com/data-protection/data-migration-software)
-
-## <a name="movere"></a>Movere
-
-Movere es una solución de detección que proporciona los datos y la información que se necesitan para planear las migraciones a la nube y seguir optimizando, supervisando y analizando los entornos de TI con confianza.
-
-[Más información](https://www.movere.io)
-
-## <a name="cosmos-db-partners"></a>Asociados de Cosmos DB
-
-Puede elegir entre una amplia variedad de expertos asociados y herramientas de integración de sistemas para respaldar las migraciones de Azure Cosmos DB para que cumplan con los requisitos de base de datos NoSQL.
-
-[Más información](https://docs.microsoft.com/en-us/azure/cosmos-db/partners-migration-cosmosdb#migration-tools)
-
-Visite el [Azure Migration Center](https://azure.microsoft.com/migration/support) para descubrir las organizaciones que ofrecen soluciones de tecnología de asociados listas para usar que se ajustan a sus escenarios de migración y obtener información sobre servicios de soporte técnico y herramientas de migración de terceros adicionales.
-
-Visite la [Guía sobre la migración de Azure Database](https://datamigration.microsoft.com) para ver la gama de opciones de migración de bases de datos e instrucciones detalladas sobre herramientas nativas y de asociados.
-
-# <a name="project-management-toolstabproject-management-tools"></a>[Herramientas de administración de proyectos](#tab/project-management-tools)
-
-Los proyectos que no se controlan ni administran tienen más probabilidades de tener problemas. Para garantizar un resultado correcto, creemos que es importante que use una herramienta de administración de proyectos. Hay muchas herramientas distintas disponibles y es posible que los jefes de proyecto de su organización ya tengan su favorita.
-
-Azure DevOps es la herramienta sugerida para la administración de proyectos durante una migración en la nube. Para acelerar el uso de Azure DevOps, Cloud Adoption Framework incluye una herramienta para implementar automáticamente una plantilla de proyecto. Esa plantilla incluye las tareas que se ejecutan normalmente durante un esfuerzo de migración. Implemente la plantilla mediante [estas instrucciones](https://docs.microsoft.com/azure/architecture/cloud-adoption/plan/template). Después, puede modificar la plantilla para que refleje las [cargas de trabajo](https://docs.microsoft.com/azure/architecture/cloud-adoption/plan/workloads) y los [recursos](https://docs.microsoft.com/azure/architecture/cloud-adoption/plan/assets) que se van a migrar.
-
-Microsoft ofrece también las siguientes herramientas de administración de proyectos que pueden funcionar de forma conjunta para brindar funcionalidades más amplias:
-
-- [Microsoft Planner](https://tasks.office.com): una manera visual sencilla para organizar el trabajo en equipo.
-- [Microsoft Project](https://products.office.com/project/project-and-portfolio-management-software): Project and Portfolio Management, Resource Capacity Management, Financial Management, Timesheet and Schedule Management.
-- [Microsoft Teams](https://products.office.com/microsoft-teams): herramienta de comunicación y colaboración en equipo. Teams también integra Planner y otras herramientas para mejorar la colaboración.
-- [Azure DevOps](https://dev.azure.com): La plantilla de planeación de Cloud Adoption Framework no es necesaria para usar Azure DevOps. Puede usar este servicio sin la plantilla para administrar la infraestructura como código o usar los elementos de trabajo y paneles para realizar la administración de proyectos. A medida que madura, su organización puede aprovechar las funcionalidades de CI/CD.
-
-Estas no son las únicas herramientas disponibles. Muchas otras herramientas de terceros se usan ampliamente en la comunidad de administración de proyectos.
-
-## <a name="set-up-for-devops"></a>Configuración para DevOps
-
-A medida que migra a las tecnologías de nube, se presenta una oportunidad excelente para configurar la organización para DevOps y CI/CD. Incluso si la organización solo administra la infraestructura, a medida que empieza a administrar la infraestructura como código y a usar los patrones y las prácticas del sector para DevOps, puede empezar a aumentar la agilidad mediante canalizaciones de CI/CD, lo que le permite adaptarse más rápido a los escenarios de cambios, crecimiento, liberación e, incluso, recuperación.
-
-[Azure DevOps](https://dev.azure.com) brinda toda la funcionalidad e integración requerida con Azure, el entorno local o, incluso, otras nubes. Obtenga más información [aquí](https://azure.microsoft.com/services/devops). Para un aprendizaje guiado, consulte el [inicio rápido sobre CI y CD con Azure DevOps](https://microsoft.github.io/PartsUnlimited/pandp/200.1x-PandP-CICDQuickstartwithVSTS.html).
-
-# <a name="cost-managementtabmanagecost"></a>[Administración de costos](#tab/ManageCost)
-
-Cuando migre recursos al entorno en la nube, es importante que realice análisis de costos periódicos. Esto le permite evitar cargos por uso inesperados, ya que el proceso de migración puede incluir requisitos de uso adicionales en los servicios. También puede cambiar el tamaño de los recursos según sea necesario para equilibrar el costo y la carga de trabajo (lo que se analiza con mayor detalle en la sección **[Optimización y transformación](./optimize-and-transform.md)** ).
+- [Linguagem de expressão regular – referência rápida](../../../docs/standard/base-types/regular-expression-language-quick-reference.md)
