@@ -17,14 +17,14 @@ Bu modülü bitirdiğinizde korumalı alan kaynaklarınızı otomatik olarak tem
 Azure AD kiracısını silmek için şu adımları izleyin:
 
 1. [Azure portalının](https://portal.azure.com/learn.docs.microsoft.com?azure-portal=true) üst çubuğunda hesabınızı seçin ve sonra da **Dizini değiştir**'i seçin.
-1. ünitede oluşturduğunuz **Learn Module AAD Tenant** dizinini seçin.
+1.  4. ünitede oluşturduğunuz **Learn Module AAD Tenant** dizinini seçin.
 1. Sol bölmede **Azure Active Directory**'yi seçin, ardından **Uygulama Kayıtları**'nı ve **WebApp-OpenIDConnect-DotNet** kaydını seçin.
 1. **Sil**'i ve sonra da **Evet**'i seçin.
 1. Sol bölmede **Azure Active Directory**’yi seçin. **Yönet**'in altında **Özellikler**'i seçin.
 1. **Azure kaynakları için erişim yönetimi**'nin altında **Evet**'i ve sonra da **Kaydet**'i seçin.
 1. Portalın sağ üst kısmında kullanıcı hesabınızı seçin ve sonra da **Oturumu kapat**'ı seçin.
 1. Normal kimlik bilgilerinizle oturum açın. Üst çubukta hesabınızı seçin ve sonra da **Dizini değiştir**'i seçin.
-1. ünitede oluşturduğunuz **Learn Module AAD Tenant** dizinini seçin.
+1.  4. ünitede oluşturduğunuz **Learn Module AAD Tenant** dizinini seçin.
 1. Sol bölmede **Azure Active Directory**'yi seçin, **Dizini sil**'i seçin ve **Sil**'i seçin.
 1. Portalın sağ üst kısmında kullanıcı hesabınızı seçin ve sonra da **Oturumu kapat**'ı seçin.
 
