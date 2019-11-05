@@ -1,10 +1,10 @@
-|Name|Description|Type|Required|Available for|
+|Nombre|Descripción|Tipo|Requerido|Disponible para|
 |--|--|--|--|--------|
-|`namespace`|Defines the object prototype of the component|Only letters or numbers|Yes|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-|`constructor`|A method for initializing the object|Only letters or numbers|Yes|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-|`control-type`|Standard| `standard`|No|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-|`description-key`|Defines the description of the component that will be seen on the UI.|`string`|No|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-|`display-name-key`|Defines the name of the control that is displayed on the UI.|`string`|Yes|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-|`preview-image`|Image that will be used on the customization screens to show a preview of the component.|`string`|No|Model-driven apps|
-|`version`|Defines the version of the component defined in [Semantic Versioning](https://semver.org)|`string`|Yes|Model-driven apps and canvas apps (experimental preview) (experimental preview)|
-<!--|`hidden`|Defines whether the component should be hidden or not|[!INCLUDE [booleantype-description](includes/booleantype-description.md)]| No|Model-driven apps|-->
+|`namespace`|Define el prototipo de objeto del componente.|Solo letras o números|Sí|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+|`constructor`|Método para inicializar el objeto.|Solo letras o números|Sí|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+|`control-type`|Normal| `standard`|No|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+|`description-key`|Define la descripción del componente que se verá en la interfaz de usuario.|`string`|No|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+|`display-name-key`|Define el nombre del control que se muestra en la interfaz de usuario.|`string`|Sí|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+|`preview-image`|Imagen que se usará en las pantallas de personalización para mostrar una vista previa del componente.|`string`|No|Aplicaciones controladas por modelos|
+|`version`|Define la versión del componente definido en el [control de versiones semántico](https://semver.org)|`string`|Sí|Aplicaciones controladas por modelos y aplicaciones de lienzo (versión preliminar experimental) (versión preliminar experimental)|
+<!--|`hidden`|Define si el componente debe estar oculto o no|[!INCLUDE [booleantype-description](includes/booleantype-description.md)]| No|Aplicaciones controladas por modelos|-->
