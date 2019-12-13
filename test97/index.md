@@ -1,4 +1,39 @@
-* <span data-ttu-id="8cfaf-114">Red Hat Enterprise Linux, CentOS 또는 Oracle Linux를 실행하는 Azure Resource Manager VM(클래식이 아님).</span><span class="sxs-lookup"><span data-stu-id="8cfaf-114">An Azure Resource Manager VM (not Classic) running Red Hat Enterprise Linux, CentOS, or Oracle Linux.</span></span> <span data-ttu-id="8cfaf-115">VM 만들기에 대한 지침은 [Azure Portal에서 Linux 가상 머신 만들기](../virtual-machines/linux/quick-create-portal.md)를 참조하세요.</span><span class="sxs-lookup"><span data-stu-id="8cfaf-115">For instructions on creating a VM, see [Create your first Linux virtual machine in the Azure portal](../virtual-machines/linux/quick-create-portal.md)</span></span>
+---
+title: 자습서 - RBAC 및 Azure Portal을 사용하여 Azure 리소스에 대한 사용자 액세스 권한 부여
+description: 이 자습서에서는 Azure Portal에서 RBAC(역할 기반 액세스 제어)를 사용하여 Azure 리소스에 대한 사용자 액세스 권한을 부여하는 방법을 알아봅니다.
+services: role-based-access-control
+documentationCenter: ''
+author: rolyon
+manager: mtillman
+editor: ''
+ms.service: role-based-access-control
+ms.devlang: ''
+ms.topic: tutorial
+ms.tgt_pltfrm: ''
+ms.workload: identity
+ms.date: 02/22/2019
+ms.author: rolyon
+ms.openlocfilehash: f4dd3995df2a068824c4aa6bccca5606d250a165
+ms.sourcegitcommit: 4c831e768bb43e232de9738b363063590faa0472
+ms.translationtype: HT
+ms.contentlocale: ko-KR
+ms.lasthandoff: 11/23/2019
+ms.locfileid: "74419654"
+---
+# <a name="tutorial-grant-a-user-access-to-azure-resources-using-rbac-and-the-azure-portal"></a>자습서: RBAC 및 Azure Portal을 사용하여 Azure 리소스에 대한 사용자 액세스 권한 부여
 
-## <a name="sign-in-to-azure"></a><span data-ttu-id="8cfaf-116">Azure에 로그인</span><span class="sxs-lookup"><span data-stu-id="8cfaf-116">Sign in to Azure</span></span>
-<span data-ttu-id="8cfaf-117">[https://portal.azure.com](https://portal.azure.com ) 에서 Azure에 로그인</span><span class="sxs-lookup"><span data-stu-id="8cfaf-117">Sign in to Azure at https://portal.azure.com</span></span>
+[RBAC(역할 기반 액세스 제어)](overview.md)는 Azure 리소스에 대한 액세스를 관리하는 방법입니다. 이 자습서에서는 리소스 그룹에서 가상 머신을 만들고 관리할 수 있는 액세스 권한을 사용자에게 부여합니다.
+
+이 자습서에서는 다음 방법에 대해 알아봅니다.
+
+> [!div class="checklist"]
+> * 리소스 그룹 범위에 속한 사용자에게 액세스 권한 부여
+> * 액세스 권한 제거
+
+Azure 구독이 아직 없는 경우 시작하기 전에 [체험 계정](https://azure.microsoft.com/free/?WT.mc_id=A261C142F)을 만듭니다.
+
+## <a name="sign-in-to-azure"></a>Azure에 로그인
+
+https://portal.azure.com 에서 Azure Portal에 로그인합니다.
+
+## <a name="create-a-resource-group"></a>리소스 그룹 만들기
