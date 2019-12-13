@@ -33,7 +33,7 @@ ms.locfileid: "74419654"
 Azure 구독이 아직 없는 경우 시작하기 전에 [체험 계정](https://azure.microsoft.com/free/?WT.mc_id=A261C142F)을 만듭니다.
 
 ## <a name="sign-in-to-azure"></a>Azure에 로그인
-
+ 
 https://portal.azure.com 에서 Azure Portal에 로그인합니다.
 
 ## <a name="create-a-resource-group"></a>리소스 그룹 만들기
