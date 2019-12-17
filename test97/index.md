@@ -1,39 +1,24 @@
 ---
-title: 자습서 - RBAC 및 Azure Portal을 사용하여 Azure 리소스에 대한 사용자 액세스 권한 부여
-description: 이 자습서에서는 Azure Portal에서 RBAC(역할 기반 액세스 제어)를 사용하여 Azure 리소스에 대한 사용자 액세스 권한을 부여하는 방법을 알아봅니다.
-services: role-based-access-control
-documentationCenter: ''
-author: rolyon
-manager: mtillman
-editor: ''
-ms.service: role-based-access-control
-ms.devlang: ''
-ms.topic: tutorial
-ms.tgt_pltfrm: ''
-ms.workload: identity
-ms.date: 02/22/2019
-ms.author: rolyon
-ms.openlocfilehash: f4dd3995df2a068824c4aa6bccca5606d250a165
-ms.sourcegitcommit: 4c831e768bb43e232de9738b363063590faa0472
-ms.translationtype: HT
-ms.contentlocale: ko-KR
-ms.lasthandoff: 11/23/2019
-ms.locfileid: "74419654"
+ title: include file
+ description: include file
+ services: virtual-machines
+ author: roygara
+ ms.service: virtual-machines
+ ms.topic: include
+ ms.date: 10/24/2019
+ ms.author: rogarana
+ ms.custom: include file
 ---
-# <a name="tutorial-grant-a-user-access-to-azure-resources-using-rbac-and-the-azure-portal"></a>자습서: RBAC 및 Azure Portal을 사용하여 Azure 리소스에 대한 사용자 액세스 권한 부여
 
-[RBAC(역할 기반 액세스 제어)](overview.md)는 Azure 리소스에 대한 액세스를 관리하는 방법입니다. 이 자습서에서는 리소스 그룹에서 가상 머신을 만들고 관리할 수 있는 액세스 권한을 사용자에게 부여합니다.
+| Premium SSD sizes | P1* | P2* | P3* | P4 | P6 | P10 | P15 | P20 | P30 | P40 | P50 | P60 | P70 | P80 |
+|-------------------|----|----|----|----|----|-----|-----|-----|-----|-----|-----|------|------|------|
+| Disk size in GiB | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1,024 | 2,048 | 4,096 | 8,192 | 16,384 | 32,767 |
+| IOPS per disk | 120 | 120 | 120 | 120 | 240 | 500 | 1,100 | 2,300 | 5,000 | 7,500 | 7,500 | 16,000 | 18,000 | 20,000 |
+| Throughput per disk | 25 MiB/sec | 25 MiB/sec | 25 MiB/sec | 25 MiB/sec | 50 MiB/sec | 100 MiB/sec | 125 MiB/sec | 150 MiB/sec | 200 MiB/sec | 250 MiB/sec | 250 MiB/sec| 500 MiB/sec | 750 MiB/sec | 900 MiB/sec |
+| Max burst IOPS per disk** | 3,500 | 3,500 | 3,500 | 3,500 | 3,500 | 3,500 | 3,500 | 3,500 |
+| Max burst throughput per disk** | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec | 170 MiB/sec |
+| Max burst duration** | 30 min  | 30 min  | 30 min  | 30 min  | 30 min  | 30 min  | 30 min  | 30 min  |
 
-이 자습서에서는 다음 방법에 대해 알아봅니다.
+\*Denotes a disk size that is currently in preview, for regional availability information see [New disk sizes: Managed and unmanaged](https://docs.microsoft.com/azure/virtual-machines/linux/faq-for-disks#new-disk-sizes-managed-and-unmanaged).
 
-> [!div class="checklist"]
-> * 리소스 그룹 범위에 속한 사용자에게 액세스 권한 부여
-> * 액세스 권한 제거
-
-Azure 구독이 아직 없는 경우 시작하기 전에 [체험 계정](https://azure.microsoft.com/free/?WT.mc_id=A261C142F)을 만듭니다.
-
-## <a name="sign-in-to-azure"></a>Azure에 로그인
- 
-https://portal.azure.com 에서 Azure Portal에 로그인합니다.
-
-## <a name="create-a-resource-group"></a>리소스 그룹 만들기
+\*\*Denotes a feature that is currently in preview, see [Disk bursting](https://docs.microsoft.com/azure/virtual-machines/linux/disk-bursting#regional-availability) for more information.
