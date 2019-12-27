@@ -18,7 +18,7 @@ ms.lasthandoff: 12/10/2019
 ms.locfileid: "74974094"
 ---
 # <a name="understand-automated-machine-learning-results"></a><span data-ttu-id="3126a-103">Descripción de los resultados de aprendizaje automático automatizado</span><span class="sxs-lookup"><span data-stu-id="3126a-103">Understand automated machine learning results</span></span>
-[!INCLUDE [applies-to-skus](../../../includes/aml-applies-to-basic-enterprise-sku.md)]
+
 
 <span data-ttu-id="3126a-104">En este artículo, aprenderá a ver y a entender los gráficos y las métricas de cada una de las ejecuciones de aprendizaje automático automatizado.</span><span class="sxs-lookup"><span data-stu-id="3126a-104">In this article, you learn how to view and understand the charts and metrics for each of your automated machine learning runs.</span></span> 
 
