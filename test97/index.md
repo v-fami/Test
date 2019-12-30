@@ -135,7 +135,7 @@ Create a parameter manually from the Report Data pane. You can configure report 
   
  Report execution options can affect how parameters are processed. A report that runs as a snapshot cannot use parameters that are derived from a query unless the query includes default values for the parameters.  
   
-##  <a name="Parameters_Subscription"></a> Parameters for a subscription  
+##  <a name="Parameters_Subscription"></a> Parameters_for_a_subscription  
  You can define a subscription for an on demand or for a snapshot and specify parameter values to use during subscription processing.  
   
 -   **On-demand report.**  For an on-demand report, you can specify a different parameter value than the published value for each parameter listed for the report. For example, suppose you have a Call Service report that uses a *Time Period* parameter to return customer service requests for the current day, week, or month. If the default parameter value for the report is set to **today**, your subscription can use a different parameter value (such as **week** or **month**) to produce a report that contains weekly or monthly figures.  
