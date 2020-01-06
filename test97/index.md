@@ -85,7 +85,7 @@ ms.locfileid: "73170482"
     echo $PUBLICIP
     ```
 
-1. 다음 명령을 실행하여 ‘프라이빗’ 가상 머신의 퍼블릭 IP 주소를 `PRIVATEIP` 변수에 저장합니다. ****
+1. 다음 명령을 실행하여 ‘프라이빗’ 가상 머신의 퍼블릭 IP 주소를 `PRIVATEIP` 변수에 저장합니다 ****.
 
     ```azurecli
     PRIVATEIP="$(az vm list-ip-addresses \
