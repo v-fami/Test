@@ -23,7 +23,7 @@ ms.locfileid: "74957408"
 ---
 
 #### <a name="other-types-of-ekm-device-specific-authentication"></a>Otros tipos de autenticación específicas del dispositivo EKM  
- Para aquellos módulos EKM que usan una autenticación que no sea la Windows o la de una combinación de *nombre de usuario/contraseña* , la autenticación se debe realizar independientemente de [!INCLUDE[ssNoVersion](../../../includes/ssnoversion-md.md)].  
+ Para aquellos módulos EKM que usan una autenticación que no sea la Windows o la de una combinación de *nombre de usuario/contraseña* , la autenticación se debe realizar independientemente de
   
 ### <a name="encryption-and-decryption-by-an-ekm-device"></a>Cifrado y descifrado por parte de un dispositivo EKM  
  Puede utilizar las siguientes funciones y características para cifrar y descifrar datos utilizando claves simétricas y asimétricas:  
@@ -38,7 +38,7 @@ ms.locfileid: "74957408"
 |DecryptByAsmKey(texto cifrado)|[DECRYPTBYASYMKEY &#40;Transact-SQL&#41;](../../../t-sql/functions/decryptbyasymkey-transact-sql.md)|  
   
 #### <a name="database-keys-encryption-by-ekm-keys"></a>Cifrado de claves de la base de datos mediante claves EKM  
- [!INCLUDE[ssNoVersion](../../../includes/ssnoversion-md.md)] pueden utilizar claves EKM para cifrar otras claves de una base de datos. Puede crear y utilizar tanto claves simétricas como asimétricas en un dispositivo EKM. Puede cifrar claves simétricas nativas (no EKM) con claves asimétricas EKM.  
+ pueden utilizar claves EKM para cifrar otras claves de una base de datos. Puede crear y utilizar tanto claves simétricas como asimétricas en un dispositivo EKM. Puede cifrar claves simétricas nativas (no EKM) con claves asimétricas EKM.  
   
  El ejemplo siguiente crea una clave simétrica de la base de datos y la cifra utilizando una clave de un módulo EKM.  
   
