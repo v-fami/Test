@@ -17,7 +17,7 @@ ms.locfileid: "74195789"
 ---
 <span data-ttu-id="b5323-122">このチュートリアルでは、以下の内容を学習します。</span><span class="sxs-lookup"><span data-stu-id="b5323-122">In this tutorial, you learn how to:</span></span>
 
-[!div class="checklist"]
+
 <span data-ttu-id="b5323-123">テスト ネットワーク環境を設定する</span><span class="sxs-lookup"><span data-stu-id="b5323-123">Set up a test network environment</span></span>
 <span data-ttu-id="b5323-124">ファイアウォールをデプロイする</span><span class="sxs-lookup"><span data-stu-id="b5323-124">Deploy a firewall</span></span>
 <span data-ttu-id="b5323-125">既定のルートを作成する</span><span class="sxs-lookup"><span data-stu-id="b5323-125">Create a default route</span></span>
@@ -27,7 +27,7 @@ ms.locfileid: "74195789"
 
 <span data-ttu-id="b5323-122">このチュートリアルでは、以下の内容を学習します。</span><span class="sxs-lookup"><span data-stu-id="b5323-122">In this tutorial, you learn how to:</span></span>
 
-[!div class="checklist"]
+
 <span data-ttu-id="b5323-123">テスト ネットワーク環境を設定する</span><span class="sxs-lookup"><span data-stu-id="b5323-123">Set up a test network environment</span></span>
 <span data-ttu-id="b5323-124">ファイアウォールをデプロイする</span><span class="sxs-lookup"><span data-stu-id="b5323-124">Deploy a firewall</span></span>
 <span data-ttu-id="b5323-125">既定のルートを作成する</span><span class="sxs-lookup"><span data-stu-id="b5323-125">Create a default route</span></span>
@@ -36,7 +36,7 @@ ms.locfileid: "74195789"
 <span data-ttu-id="b5323-128">ファイアウォールをテストする</span><span class="sxs-lookup"><span data-stu-id="b5323-128">Test the firewall</span></span>
 <span data-ttu-id="b5323-122">このチュートリアルでは、以下の内容を学習します。</span><span class="sxs-lookup"><span data-stu-id="b5323-122">In this tutorial, you learn how to:</span></span>
 
-[!div class="checklist"]
+
 <span data-ttu-id="b5323-123">テスト ネットワーク環境を設定する</span><span class="sxs-lookup"><span data-stu-id="b5323-123">Set up a test network environment</span></span>
 <span data-ttu-id="b5323-124">ファイアウォールをデプロイする</span><span class="sxs-lookup"><span data-stu-id="b5323-124">Deploy a firewall</span></span>
 <span data-ttu-id="b5323-125">既定のルートを作成する</span><span class="sxs-lookup"><span data-stu-id="b5323-125">Create a default route</span></span>
