@@ -42,7 +42,7 @@ Azure サブネットから外に向かうアウトバウンド ネットワー�
 > * 既定のルートを作成する
 > * www.google.com へのアクセスを許可するようにアプリケーションを構成する
 > * 外部 DNS サーバーへのアクセスを許可するようにネットワーク ルールを構成する
-> *  www.google.com ファイアウォールをテストする
+> * ファイアウォールをテストする
 
 必要に応じて、[Azure PowerShell](deploy-ps.md) を使ってこのチュートリアルの手順を完了できます。
 
@@ -56,7 +56,7 @@ Azure サブスクリプションをお持ちでない場合は、開始する�
 
 このリソース グループには、このチュートリアルのすべてのリソースが含まれます。
 
-1. Azure Portal https://portal.azure.com にサインインします。
+1. Azure Portal ([https://portal.azure.com](https://portal.azure.com)) にサインインします。
 2. Azure portal メニューで **[リソース グループ]** を選択するか、または任意のページから *[リソース グループ]* を検索して選択します。 その後、 **[追加]** を選択します。
 3. **[リソース グループ名]** として「*Test-FW-RG*」と入力します。
 4. **[サブスクリプション]** で、ご使用のサブスクリプションを選択します。
@@ -242,10 +242,8 @@ Azure Firewall には、既定で許可されるインフラストラクチャ F
    Google のホーム ページが表示されます。
 
 5. [https://www.microsoft.com]\(https://www.microsoft.com ) を参照します。
-http://www.microsoft.com
 
    ファイアウォールによってブロックされます。
- http://www.microsoft.com
 
 これで、ファイアウォール ルールが動作していることを確認できました。
 
@@ -255,7 +253,6 @@ http://www.microsoft.com
 ## <a name="clean-up-resources"></a>リソースのクリーンアップ
 
 ファイアウォール リソースは、次のチュートリアルのために残しておいてもかまいませんが、不要であれば、**Test-FW-RG** リソース グループを削除して、ファイアウォール関連のすべてのリソースを削除してください。
-www.google.com
 
 ## <a name="next-steps"></a>次の手順
 
