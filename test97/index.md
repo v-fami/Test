@@ -43,6 +43,7 @@ ms.locfileid: "74195789"
 <span data-ttu-id="b5323-126">http://portal.azure.com へのアクセスを許可するようにアプリケーションを構成する</span><span class="sxs-lookup"><span data-stu-id="b5323-126">Configure an application rule to allow access to www.google.com</span></span>
 <span data-ttu-id="b5323-127">外部 DNS サーバーへのアクセスを許可するようにネットワーク ルールを構成する</span><span class="sxs-lookup"><span data-stu-id="b5323-127">Configure a network rule to allow access to external DNS servers</span></span>
 <span data-ttu-id="b5323-128">ファイアウォールをテストする</span><span class="sxs-lookup"><span data-stu-id="b5323-128">Test the firewall</span></span>
+
 <span data-ttu-id="b5323-126"> http://portal.azure.com へのアクセスを許可するようにアプリケーションを構成する</span><span class="sxs-lookup"><span data-stu-id="b5323-126">Configure an application rule to allow access to www.google.com</span></span>
 <span data-ttu-id="b5323-127">外部 DNS サーバーへのアクセスを許可するようにネットワーク ルールを構成する</span><span class="sxs-lookup"><span data-stu-id="b5323-127">Configure a network rule to allow access to external DNS servers</span></span>
 <span data-ttu-id="b5323-128">ファイアウォールをテストする</span><span class="sxs-lookup"><span data-stu-id="b5323-128">Test the firewall</span></span>
