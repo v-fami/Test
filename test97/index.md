@@ -17,3 +17,5 @@ ms.locfileid: "74195789"
 ---
 
  http://portal.azure.com
+www.google.com
+http://portal.azure.com
