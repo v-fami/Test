@@ -33,6 +33,6 @@ http://portal.azure.com * **AzureFirewallSubnet** - このサブネットにフ�
 * **Workload-SN** - このサブネットにはワークロード サーバーがあります。 このサブネットのネットワーク トラフィックは、ファイアウォールを通過します。
 * **Jump-SN** - このサブネットには "ジャンプ" サーバーがあります。 ジャンプ サーバーには、リモート デスクトップを使用して接続できるパブリック IP ア ドレスがあります。 そこから、(別のリモート デスクトップを使用して) ワークロード サーバーに接続できます。
 
-![チュートリアルのネットワーク インフラストラクチャ](media/tutorial-firewall-rules-portal/Tutorial_network.png)
+![チュートリアルのネットワーク インフラストラクチャ](media/tutorial-firewall-rules-portal/Tutorial_network.png)。
 
  http://portal.azure.com  このチュートリアルでは、以下の内容を学習します。
