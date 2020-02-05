@@ -14,15 +14,15 @@ LOB applications and SaaS solutions.
 
 <ul class="panelContent cardsFTitle">
     <li>
+        <img src="/media/index/i_whats-new.svg">
         <a href="/microsoft-identity-manager/reference/version-history">
         <div class="cardSize">
             <div class="cardPadding">
                 <div class="card">
                     <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="/media/index/i_whats-new.svg">
+                        <div class="cardImage">                            
                         </div>
-                    </div>
+                      </div>                    
                     <div class="cardText">
                         <h3>New Updates with Microsoft Identity Manager 2016 Service Pack 1</h3>
                     </div>
@@ -37,9 +37,9 @@ LOB applications and SaaS solutions.
             <div class="cardPadding">
                 <div class="card">
                     <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="/media/index/i_learn-about.svg" alt="b">
+                        <div class="cardImage">                           
                         </div>
+                         <img src="/media/index/i_learn-about.svg" alt="b">
                     </div>
                     <div class="cardText">
                         <h3>Learn about Microsoft Identity Manager</h3>
