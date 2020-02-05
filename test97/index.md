@@ -20,7 +20,7 @@ LOB applications and SaaS solutions.
                 <div class="card">
                     <div class="cardImageOuter">
                         <div class="cardImage">
-                            <img src="/media/index/i_whats-new.svg" alt="www.w3.or" />
+                            <img src="/media/index/i_whats-new.svg" alt=".">
                         </div>
                     </div>
                     <div class="cardText">
@@ -42,7 +42,8 @@ LOB applications and SaaS solutions.
                         </div>
                     </div>
                     <div class="cardText">
-                        <h3>Learn about Microsoft Identity Manager</h3>                    </div>
+                        <h3>Learn about Microsoft Identity Manager</h3>
+                    </div>
                 </div>
             </div>
         </div>
