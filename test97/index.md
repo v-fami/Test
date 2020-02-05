@@ -20,7 +20,7 @@ LOB applications and SaaS solutions.
                 <div class="card">
                     <div class="cardImageOuter">
                         <div class="cardImage">
-                            <img src="/media/index/i_whats-new.svg" alt="http://www.w3.org/2000/svg" />
+                            <img src="/media/index/i_whats-new.svg" alt="www.w3.or" />
                         </div>
                     </div>
                     <div class="cardText">
@@ -38,7 +38,7 @@ LOB applications and SaaS solutions.
                 <div class="card">
                     <div class="cardImageOuter">
                         <div class="cardImage">
-                            <img src="/media/index/i_learn-about.svg" alt="b" />
+                            <img src="/media/index/i_learn-about.svg" alt="b">
                         </div>
                     </div>
                     <div class="cardText">
@@ -55,7 +55,7 @@ LOB applications and SaaS solutions.
                 <div class="card">
                     <div class="cardImageOuter">
                         <div class="cardImage">
-                            <img src="/media/index/i_deploy.svg" alt="c" />
+                            <img src="/media/index/i_deploy.svg" alt= c/>
                         </div>
                     </div>
                     <div class="cardText">
