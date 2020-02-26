@@ -1,148 +1,35 @@
 ---
-layout: LandingPage
-ms.topic: landing-page
-ms.prod: microsoft-identity-manager
-title: Microsoft Identity Manager Documentation | Microsoft Docs
-description: Learn how to use Microsoft Identity Manager.
----
-# Microsoft Identity Manager Documentation
-
-Microsoft Identity Manager 2016 binds Microsoft's identity and access management solutions together by
-seamlessly bridging multiple on-premises authentication stores like Active Directory, LDAP, Oracle,
-and other applications with Azure Active Directory. This provides consistent experiences to on-premises
-LOB applications and SaaS solutions.
-
-<ul class="panelContent cardsFTitle">
-    <li>
-        <a href="reference/version-history.md">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_whats-new.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>New Updates with Microsoft Identity Manager 2016 Service Pack 1</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-    <li>
-        <a href="microsoft-identity-manager-2016.md">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_learn-about.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>Learn about Microsoft Identity Manager</h3>                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-    <li>
-        <a href="microsoft-identity-manager-deploy.md">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_deploy.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>Deploy Microsoft Identity Manager 2016</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-</ul>
-
+title: "Troubleshoot connecting to the SQL Server Database Engine | Microsoft Docs"
+ms.custom: sqlfreshmay19
+ms.date: "11/25/2019"
+ms.prod: sql
+ms.prod_service: high-availability
+ms.reviewer: ""
+ms.technology: configuration
+ms.topic: troubleshooting
+helpviewer_keywords: 
+  - "troubleshooting, connecting to Database Engine"
+  - "connecting to Database Engine, troubleshooting"
+ms.assetid: 474c365b-c451-4b07-b636-1653439f4b1f
+author: MikeRayMSFT
+ms.author: mikeray
 ---
 
-> [!WARNING]
-> Forefront Identity Manager (FIM) mainstream support ended 10/10/2017. Please <a href="microsoft-identity-manager-2016-upgrade-from-fim-2010-r2.md" data-raw-source="[upgrade](microsoft-identity-manager-2016-upgrade-from-fim-2010-r2.md)">upgrade</a> to Microsoft Identity Manager 2016. More information: 
-> - The FIM lifecycle information is provided  <a href="https://support.microsoft.com/lifecycle/search?alpha=Microsoft%20Forefront%20Identity%20Manager%202010%20R2%20Service%20Pack%201,Microsoft%20Identity%20Manager%202016,Microsoft%20Forefront%20Identity%20Manager%202010" data-raw-source="[here](https://support.microsoft.com/lifecycle/search?alpha=Microsoft%20Forefront%20Identity%20Manager%202010%20R2%20Service%20Pack%201,Microsoft%20Identity%20Manager%202016,Microsoft%20Forefront%20Identity%20Manager%202010)">here</a> 
 
-<h2>Reference</h2>
-<ul class="panelContent cardsFTitle">
-    <li>
-        <a href="/microsoft-identity-manager/reference/privileged-access-management-rest-api-reference">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_reference.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>Privileged Access Management REST API Reference</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-        <li>
-        <a href="/microsoft-identity-manager/reference/certificate-management-rest-api-reference">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_reference.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>Certificate Management REST API Reference</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-    <li>
-        <a href="https://blogs.technet.microsoft.com/iamsupport/">
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardImageOuter">
-                        <div class="cardImage">
-                            <img src="MIMDocs/media/index/i_blog.svg" alt="" />
-                        </div>
-                    </div>
-                    <div class="cardText">
-                        <h3>Identity and Access Management support team blog</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </a>
-    </li>
-</ul>
+1. On the client computer, using SQL Server Management Studio, attempt to connect using the IP Address and the TCP port number in the format IP address comma port number. For example, `192.168.1.101,1433`. If this connection fails, then you probably have one of the following problems:
 
-<h2>Solutions</h2>
-<ul class="panelContent cardsW">
-    <li>
-        <div class="cardSize">
-            <div class="cardPadding">
-                <div class="card">
-                    <div class="cardText">
-                        <p><a href="/enterprise-mobility-security/solutions/manage-access-at-scale">Manage access at scale</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </li>
-</ul>
+   - `ping` of the IP address doesn't work, indicating a general TCP configuration problem. Go back to the section [Testing TCP/IP connectivity](#testTCPIP).
+   - SQL Server is not listening on the TCP protocol. Go back to the section [Enable protocols](#enableprotocols).
+   - SQL Server is listening on a port other than the port you specified. Go back to the section [Get the TCP port number](#getTCP).
+   - The SQL Server TCP port is being blocked by the firewall. Go back to the section [Open a port in the firewall](#open-a-port-in-the-firewall).
+
+2. Once you can connect using the IP address and port number, attempt to connect using the IP address without a port number. For a default instance, just use the IP address. For a named instance, use the IP address and the instance name in the format IP address backslash instance name, for example `192.168.1.101\<instance name>` If this doesn't work, then you probably have one of the following problems:
+
+   - If you are connecting to the default instance, it might be listening on a port other than TCP port 1433, and the client isn't attempting to connect to the correct port number.
+   - If you are connecting to a named instance, the port number is not being returned to the client.
+
+   Both of these problems are related to the SQL Server Browser service, which provides the port number to the client. The solutions are:
+
+   - Start the SQL Server Browser service. See the instructions to [start browser in SQL Server Configuration Manager](#startbrowser).
+   - The SQL Server Browser service is being blocked by the firewall. Open UDP port 1434 in the firewall. Go back to the section [Open a port in the firewall](#open-a-port-in-the-firewall). Make sure you are opening a UDP port, not a TCP port.
+   - The UDP port 1434 information is being blocked by a router. UDP communication (user datagram protocol) is not designed to pass through routers. This keeps the network from getting filled with low-priority traffic. You might be able to configure y
