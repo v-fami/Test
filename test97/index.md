@@ -1,32 +1,38 @@
 ---
-title: "Troubleshoot connecting to the SQL Server Database Engine | Microsoft Docs"
+title: Solución de problemas de conexión al Motor de base de datos de SQL Server | Microsoft Docs
 ms.custom: sqlfreshmay19
-ms.date: "11/25/2019"
+ms.date: 11/25/2019
 ms.prod: sql
 ms.prod_service: high-availability
-ms.reviewer: ""
+ms.reviewer: ''
 ms.technology: configuration
 ms.topic: troubleshooting
-helpviewer_keywords: 
-  - "troubleshooting, connecting to Database Engine"
-  - "connecting to Database Engine, troubleshooting"
+helpviewer_keywords:
+- troubleshooting, connecting to Database Engine
+- connecting to Database Engine, troubleshooting
 ms.assetid: 474c365b-c451-4b07-b636-1653439f4b1f
 author: MikeRayMSFT
 ms.author: mikeray
+ms.openlocfilehash: b2394fc73483b78e5e90a4ccffa9ce45205dc237
+ms.sourcegitcommit: b2e81cb349eecacee91cd3766410ffb3677ad7e2
+ms.translationtype: HT
+ms.contentlocale: es-ES
+ms.lasthandoff: 02/01/2020
+ms.locfileid: "74542315"
 ---
-# Troubleshoot connecting to the SQL Server Database Engine
+# <a name="troubleshoot-connecting-to-the-sql-server-database-engine"></a>Solución de problemas de conexión al Motor de base de datos de SQL Server
 
 
-This article lists troubleshooting techniques to use when you cannot connect to an instance of the SQL Server Database Engine on a single server.
+En este artículo se proporciona una lista exhaustiva de técnicas de solución de problemas que se pueden usar cuando no es posible conectarse a una instancia del Motor de base de datos de SQL Server en un único servidor.
 
 >[!NOTE]
->For other scenarios, see:
->- [Availability group listener](../availability-groups/windows/listeners-client-connectivity-application-failover.md)
->- [Failover cluster instances](../../sql-server/failover-clusters/windows/always-on-failover-cluster-instances-sql-server.md)
+>Para otros escenarios, consulte:
+>- [Agente de escucha de grupo de disponibilidad](../availability-groups/windows/listeners-client-connectivity-application-failover.md)
+>- [Instancias de clúster de conmutación por error](../../sql-server/failover-clusters/windows/always-on-failover-cluster-instances-sql-server.md)
 
-These steps are not in the order of the most likely problems which you probably already tried. These steps are in order of the most basic problems to more complex problems. These steps assume that you are connecting to SQL Server instance from another computer by using the TCP/IP protocol, which is the most common situation.
+Los problemas no están ordenados de más habituales a menos, sino de más básicos a más complejos. Se da por sentado que se está conectando a la instancia de SQL Server desde otro equipo mediante el protocolo TCP/IP, que es la situación más habitual.
 
-These instructions are useful when troubleshooting the "**Connect to Server**" error, which can be `Error Number: 11001 (or 53), Severity: 20, State: 0`. The following is an example of an error message:
+Estas instrucciones resultan útiles al solucionar el error "**Conectar con el servidor**", que puede ser `Error Number: 11001 (or 53), Severity: 20, State: 0`. A continuación se presenta un ejemplo de un mensaje de error:
 
 > `A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections.`
 >
@@ -34,164 +40,164 @@ These instructions are useful when troubleshooting the "**Connect to Server**" e
 >
 > `(provider: TCP Provider, error: 0 - No such host is known.) (Microsoft SQL Server, Error: 11001)`
 
-This error usually means that the client can't find the SQL Server instance. This normally happens when at least one of the following problems exist:
+Este error normalmente significa que el cliente no puede encontrar la instancia de SQL Server. Esto ocurre normalmente cuando existe al menos uno de los siguientes problemas:
 
-- The name of the computer hosting the SQL Server
-- Instance does not resolve the the correct IP
-- The TCP port number is not specified correctly
+- Hay un problema con el nombre del equipo que aloja SQL Server.
+- La instancia no resuelve la dirección IP correcta.
+- No se ha especificado correctamente el número de puerto TCP.
 
 > [!TIP]
-> An interactive troubleshooting page is available from  Customer Support Services at [Solving Connectivity errors to SQL Server](https://support.microsoft.com/help/4009936/solving-connectivity-errors-to-sql-server).
+> En [Solving Connectivity errors to SQL Server](https://support.microsoft.com/help/4009936/solving-connectivity-errors-to-sql-server) (Resolver errores de conectividad de SQL Server) encontrará una página interactiva de solución de problemas de los servicios de soporte al cliente de 
 
-### Not included
+### <a name="not-included"></a>No incluido
 
-- This topic does not include information about SSPI errors. For SSPI errors, see [How to troubleshoot the "Cannot generate SSPI context" error message](https://support.microsoft.com/kb/811889).
-- This topic does not include information about Kerberos errors. For help, see [Microsoft Kerberos Configuration Manager for SQL Server](https://www.microsoft.com/download/details.aspx?id=39046).
-- This topic does not include information about SQL Azure Connectivity. For help, see [Troubleshooting connectivity issues with Microsoft Azure SQL Database](/azure/sql-database/troubleshoot-connectivity-issues-microsoft-azure-sql-database).
+- En este tema no se incluye información sobre los errores SSPI. Para ver los errores SSPI, consulte [Cómo solucionar el mensaje de error "No se puede generar contexto SSPI"](https://support.microsoft.com/kb/811889).
+- En este tema no se incluye información sobre los errores Kerberos. Para obtener ayuda, vea [Microsoft Kerberos Configuration Manager para SQL Server](https://www.microsoft.com/download/details.aspx?id=39046).
+- En este tema no se incluye información sobre la conectividad de SQL Azure. Para obtener ayuda, vea [Solucionar problemas de conectividad con Microsoft Azure SQL Database](/azure/sql-database/troubleshoot-connectivity-issues-microsoft-azure-sql-database).
 
-## Get instance name from Configuration Manger
+## <a name="get-instance-name-from-configuration-manger"></a>Obtención del nombre del administrador de configuración
 
-On the server that hosts the SQL Server instance, verify the instance name. Use [SQL Server Configuration Manager](../../relational-databases/sql-server-configuration-manager.md).
+En el servidor que hospeda la instancia de SQL Server, compruebe el nombre de la instancia. Use el [Administrador de configuración de SQL Server](../../relational-databases/sql-server-configuration-manager.md).
 
-Configuration Manager is automatically installed on the computer when SQL Server is installed. Instructions on starting Configuration Manager vary slightly by version of SQL Server and Windows. For version specific details, see [SQL Server Configuration Manager](../../relational-databases/sql-server-configuration-manager.md).)
+El Administrador de configuración se instala automáticamente en el equipo al instalar SQL Server. Las instrucciones para iniciar el Administrador de configuración varían ligeramente según la versión de SQL Server y Windows. Para obtener detalles concretos de la versión, consulte [Administrador de configuración de SQL Server](../../relational-databases/sql-server-configuration-manager.md).
 
-1. Sign in to the computer hosting the instance of SQL Server.
-1. Start SQL Server Configuration Manager.
-1. In the left pane, select **SQL Server Services**.
-1. In the right pane, verify the name of the instance of the database engine.
+1. Inicie sesión en el equipo que hospeda la instancia de SQL Server.
+1. Inicie el Administrador de configuración de SQL Server.
+1. En el panel izquierdo, seleccione **Servicios de SQL Server**.
+1. En el panel derecho, compruebe el nombre de la instancia del motor de base de datos.
 
-   - `SQL SERVER (MSSQLSERVER)` denotes a default instance of SQL Server. The name of the default instance is `<computer name>`.
-   - `SQL SERVER (<instance name>)` denotes a named instance of SQL Server. The name of the name instance is `<computer name>\<instance name>`
+   - `SQL SERVER (MSSQLSERVER)` indica una instancia predeterminada de SQL Server. El nombre de la instancia predeterminada es `<computer name>`.
+   - `SQL SERVER (<instance name>)` indica una instancia con nombre de SQL Server. El nombre de la instancia es `<computer name>\<instance name>`.
 
-## Verify - the instance is running
+## <a name="verify---the-instance-is-running"></a>Comprobación de que la instancia se está ejecutando
 
-To verify that the instance is running, in Configuration Manager look at the symbol by the SQL Server instance.
+Para comprobar que la instancia se está ejecutando, en Configuration Manager mire el símbolo de la instancia de SQL Server.
 
-- A green arrow indicates that an instance is running.
-- A red square indicates that an instance is stopped.
+- Una flecha verde indica que una instancia se está ejecutando.
+- Un cuadrado rojo indica que una instancia está detenida.
 
-If the instance is stopped, right-click the instance and then click **Start**. The server instance starts, and the indicator becomes a green arrow.
+Si la instancia se detiene, haga clic en ella con el botón derecho y luego haga clic en **Iniciar**. Se inicia la instancia del servidor y el indicador se convierte en una flecha verde.
 
-## <a name = "startbrowser"></a> Verify - SQL Server Browser service is running
+## <a name = "startbrowser"></a> Comprobación: ejecución del servicio SQL Server Browser
 
-To connect to a named instance, SQL Server Browser service must be running. In Configuration Manager, locate **SQL Server Browser** service and verify that it is running. If it is not running, start it. SQL Server Browser service is not required for default instances.
+Para conectarse a una instancia con nombre, el servicio SQL Server Browser debe estar ejecutándose. En Configuration Manager, busque el servicio **SQL Server Browser** y compruebe que se está ejecutando. Si no se está ejecutando, inícielo. No es necesario el servicio SQL Server Browser para las instancias predeterminadas.
 
-A default instance of SQL Server does not require SQL Server Browser service.
+Una instancia predeterminada de SQL Server no requiere el servicio SQL Server Browser.
 
-## Testing a local connection
+## <a name="testing-a-local-connection"></a>Prueba de una conexión local
 
-Before troubleshooting a connection problem from another computer, first test your ability to connect from a client application installed locally on the computer that is running SQL Server. Connecting locally avoids issues with networks and firewalls. 
+Antes de solucionar un problema de conexión desde otro equipo, pruebe la capacidad de conectarse desde una aplicación cliente instalada localmente en el equipo con SQL Server. La conexión local evita problemas con redes y cortafuegos. 
 
-This procedure uses SQL Server Management Studio. If you do not have Management Studio installed, see [Download SQL Server Management Studio (SSMS)](../../ssms/download-sql-server-management-studio-ssms.md). If you are not able to install Management Studio, you can test the connection using the `sqlcmd.exe` utility. `sqlcmd.exe` is installed with the Database Engine. For information about `sqlcmd.exe`, see [sqlcmd Utility](../../tools/sqlcmd-utility.md).)
+En este procedimiento se usa SQL Server Management Studio. Si no tiene instalado Management Studio, consulte [Descarga de SQL Server Management Studio (SSMS)](../../ssms/download-sql-server-management-studio-ssms.md). Si no puede instalar Management Studio, puede probar la conexión con la utilidad `sqlcmd.exe`. `sqlcmd.exe` se instala con el Motor de base de datos. Para obtener información sobre `sqlcmd.exe`, vea [sqlcmd (utilidad)](../../tools/sqlcmd-utility.md)).
 
-1. Sign in to the computer where SQL Server is installed, using a login that has permission to access SQL Server. (During installation, SQL Server requires at least one login to be specified as a SQL Server Administrator. If you do not know an administrator, see [Connect to SQL Server When System Administrators Are Locked Out](connect-to-sql-server-when-system-administrators-are-locked-out.md).)
-1. On the Start page, type **SQL Server Management Studio**, or on older versions of Windows on the Start menu, point to **All Programs**, point to **Microsoft SQL Server**, and then click **SQL Server Management Studio**.
-1. In the **Connect to Server** dialog box, in the **Server** type box, select **Database Engine**. In the **Authentication** box, select **Windows Authentication**. In the **Server name** box, type one of the following connection types:
+1. Inicie sesión en el equipo donde está instalado SQL Server con un inicio de sesión que tenga permiso para acceder a SQL Server. (Durante la instalación, SQL Server necesita que se especifique al menos un inicio de sesión como administrador de SQL Server. Si no conoce ningún administrador, consulte [Conectarse a SQL Server cuando los administradores del sistema no tienen acceso](connect-to-sql-server-when-system-administrators-are-locked-out.md)).
+1. En la página Iniciar, escriba **SQL Server Management Studio**, o bien, en el menú Inicio de versiones anteriores de Windows, seleccione **Todos los programas**, **Microsoft SQL Server**y luego haga clic en **SQL Server Management Studio**.
+1. En el cuadro de diálogo **Conectar con el servidor** , en el cuadro de tipo **Servidor** , seleccione **Motor de base de datos**. En el cuadro **Autenticación** , seleccione **Autenticación de Windows**. En el cuadro **Nombre del servidor**, escriba uno de los siguientes tipos de conexión:
 
-   |Connecting to|Type|Example|
+   |Conectar con|Tipo|Ejemplo|
    |:-----------------|:---------------|:-----------------|
-   |Default instance|`<computer name>`|`ACCNT27`|
-   |Named Instance|`<computer name\instance name>`|`ACCNT27\PAYROLL`|
+   |Instancia predeterminada|`<computer name>`|`ACCNT27`|
+   |Instancia con nombre|`<computer name\instance name>`|`ACCNT27\PAYROLL`|
 
    > [!NOTE]
-   > When connecting to a SQL Server from a client application on the same computer, the shared memory protocol is used. Shared memory is a type of local named pipe, so sometimes errors regarding pipes are encountered.
+   > Al conectarse a SQL Server desde una aplicación cliente del mismo equipo, se usa el protocolo de memoria compartida. La memoria compartida es un tipo de canalización local con nombre, así que a veces se producen errores relacionados con las canalizaciones.
 
-   If you receive an error at this point, you will have to resolve it before proceeding. There are many possible things that could be a problem. Your login might not be authorized to connect. Your default database might be missing.
+   Si aparece un error en este punto, tendrá que resolverlo antes de continuar. Hay muchos aspectos que podrían plantear problemas. El inicio de sesión podría no estar autorizado a conectarse. Podría faltar la base de datos predeterminada.
 
    > [!NOTE]
-   > Some error messages passed to the client intentionally do not give enough information to troubleshoot the problem. This is a security feature to avoid providing an attacker with information about SQL Server. To view the complete information about the error, look in the SQL Server error log. The details are provided there. 
+   > Algunos mensajes de error que se pasan al cliente no proporcionan suficiente información para solucionar el problema a propósito. Se trata de una característica de seguridad para evitar proporcionar información sobre SQL Server a cualquier atacante. Para ver la información completa sobre el error, busque en el registro de errores de SQL Server. Allí se proporcionan los detalles. 
 
-1. If you receive error `18456 Login failed for user`, Books Online topic [MSSQLSERVER_18456](../../relational-databases/errors-events/mssqlserver-18456-database-engine-error.md) contains additional information about error codes. And Aaron Bertrand's blog has a very extensive list of error codes at [Troubleshooting Error 18456](https://sqlblog.org/2011/01/14/troubleshooting-error-18456). You can view the error log with SSMS (if you can connect), in the Management section of the Object Explorer. Otherwise, you can view the error log with the Windows Notepad program. The default location varies with your version and can be changed during setup. The default location for Server\MSSQL15.MSSQLSERVER\MSSQL\Log\ERRORLOG`. 
+1. Si recibe el error `18456 Login failed for user`, el tema de los Libros en pantalla [MSSQLSERVER_18456](../../relational-databases/errors-events/mssqlserver-18456-database-engine-error.md) contiene información adicional sobre los códigos de error. Además, el blog de Aaron Bertrand ofrece una lista muy amplia de códigos de error en [Troubleshooting Error 18456 (Solucionar el error 18456)](https://sqlblog.org/2011/01/14/troubleshooting-error-18456). Puede ver el registro de errores con SSMS (si se puede conectar), en la sección Administración del Explorador de objetos. De lo contrario, puede ver el registro de errores con el programa Bloc de notas de Windows. La ubicación predeterminada varía en función de la versión y se puede cambiar durante la instalación. La ubicación predeterminada de  es `C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Log\ERRORLOG`. 
 
-1. If you can connect using shared memory, test connecting using TCP. You can force a TCP connection by specifying `tcp:` before the name. For example:
+1. Si puede conectar con la memoria compartida, pruebe la conexión mediante TCP. Puede forzar una conexión TCP si especifica `tcp:` antes del nombre. Por ejemplo:
 
-   |Connecting to:|Type:|Example:|
+   |Conectar con:|Escriba:|Ejemplo:|
    |-----------------|---------------|-----------------|
-   |Default instance|`tcp:<computer name>`|`tcp:ACCNT27`|
-   |Named Instance|`tcp:<computer name/instance name>`|`tcp:ACCNT27\PAYROLL`|
+   |Instancia predeterminada|`tcp:<computer name>`|`tcp:ACCNT27`|
+   |Instancia con nombre|`tcp:<computer name/instance name>`|`tcp:ACCNT27\PAYROLL`|
 
-1. If you can connect with shared memory but not TCP, then you must fix the TCP problem. The most likely issue is that TCP is not enabled. To enable TCP, See the [Enable protocols](#enableprotocols) steps above.
+1. Si puede conectar con la memoria compartida pero no con TCP, debe solucionar el problema de TCP. Lo más probable es que TCP no esté habilitado. Para habilitar TCP, consulte los pasos anteriores de [Habilitar protocolos](#enableprotocols).
 
-1. If your goal is to connect with an account other than an administrator account, once you can connect as an administrator, try the connection again using the Windows Authentication login or the SQL Server Authentication login that the client application will be using.
+1. Si su objetivo es conectar con una cuenta que no sea la de un administrador, una vez que pueda conectarse como administrador, vuelva a probar la conexión con el inicio de sesión de autenticación de Windows o el inicio de sesión de autenticación de SQL Server que va a usar la aplicación cliente.
 
-## Get the IP address of the server
+## <a name="get-the-ip-address-of-the-server"></a>Obtención de la dirección IP del servidor
 
-Get the IP Address of the computer hosting the instance of SQL Server.
+Obtenga la dirección IP del equipo que hospeda la instancia de SQL Server.
 
-1. On the Start menu, click **Run**. In the **Run** window, type **cmd**, and then click **OK**.
-1. In the command prompt window, type `ipconfig` and then press enter. Make a note of the **IPv4** Address and the **IPv6** Address.
+1. En el menú Iniciar, haga clic en **Ejecutar**. En la ventana **Ejecutar**, escriba **cmd** y haga clic en **Aceptar**.
+1. En la ventana de símbolo del sistema, escriba `ipconfig` y pulse ENTRAR. Anote la dirección **IPv4** y la dirección **IPv6** .
 
-  >SQL Server can connect using the either IP version 4 protocol or IP version 6 protocol. Your network could allow either or both. Most people start by troubleshooting the **IPv4** address. It's shorter and easier to type.
+  >SQL Server puede conectarse mediante el protocolo IP versión 4 o el protocolo IP versión 6. La red podría permitir uno o ambos. La mayoría de los usuarios comienza por solucionar los problemas de la dirección **IPv4** . Es más corta y más fácil de escribir.
 
-## <a name = "getTCP"></a>Get the SQL Server instance TCP port
+## <a name = "getTCP"></a>Obtención del puerto TCP de la instancia de SQL Server
 
-In most cases, you connect to the Database Engine from another computer using the TCP protocol.
+En la mayoría de los casos, se conecta al Motor de base de datos desde otro equipo mediante el protocolo TCP.
 
-1. Using SQL Server Management Studio on the computer running SQL Server, connect to the instance of SQL Server. In Object Explorer, expand **Management**, expand **SQL Server Logs**, and then double-click the current log.
-2. In the Log Viewer, click the **Filter** button on the toolbar. In the **Message contains text** box, type `server is listening on`, click **Apply filter**, and then click **OK**.
-3. A message similar to `Server is listening on [ 'any' <ipv4> 1433]` should be listed. 
+1. Con SQL Server Management Studio en el equipo que ejecuta SQL Server, conéctese a la instancia de SQL Server. En el Explorador de objetos, expanda **Administración**, **Registros de SQL Server**y luego haga doble clic en el registro actual.
+2. En el Visor de registros, haga clic en el botón **Filtrar** de la barra de herramientas. En el cuadro **El mensaje contiene texto**, escriba `server is listening on`, haga clic en **Aplicar filtro** y después en **Aceptar**.
+3. Debería aparecer un mensaje similar a `Server is listening on [ 'any' <ipv4> 1433]`. 
 
-This message indicates that this instance of SQL Server is listening on all the IP addresses on this computer (for IP version 4) and is listening to TCP port 1433. (TCP port 1433 is usually the port used by the Database Engine or a default instance of SQL Server. Only one instance of SQL Server can use a port, so if there is more than one instance of SQL Server installed, some instances must use other port numbers.) Make a note of the port number used by the  instance that you are trying to connect to.
+Este mensaje indica que esta instancia de SQL Server está escuchando en todas las direcciones IP de este equipo (para IP versión 4) y está escuchando al puerto TCP 1433. (El puerto TCP 1433 suele ser el que usa el motor de base de datos o una instancia predeterminada de SQL Server. Solo una instancia de SQL Server puede usar un puerto, por lo que si hay más de una instancia de SQL Server instalada, algunas instancias deben usar otros números de puerto). Anote el número de puerto usado por la instancia de  a la que está intentando conectarse.
 
   > [!NOTE]
-  > `IP address 127.0.0.1` is probably listed. It is called the loopback adapter address. Only processes on the same computer can use it to connect. It can be useful for troubleshooting, but you can't use it to connect from another computer.
+  > Probablemente aparezca `IP address 127.0.0.1`. Se denomina la dirección del adaptador de bucle invertido. Solo se pueden usar los procesos en el mismo equipo para conectarse. Puede ser útil para solucionar problemas, pero no se puede usar para conectarse desde otro equipo.
 
-## <a name = "enableprotocols"></a>Enable protocols
+## <a name = "enableprotocols"></a>Habilitación de protocolos
 
-In some installations of SQL Server, connecting to the Database Engine from another computer is not enabled unless an administrator uses Configuration Manager to enable it. To enable connections from another computer:
+En algunas instalaciones de SQL Server, no se puede conectar al motor de base de datos desde otro equipo a menos que un administrador use el Administrador de configuración para permitirlo. Para habilitar conexiones desde otro equipo:
 
-1. Open SQL Server Configuration Manager, as described earlier.
-1. Using Configuration Manager, in the left pane expand **SQL Server Network Configuration**, and then select the instance of SQL Server that you want to connect to. The right-pane lists the connection protocols available. Shared Memory is normally enabled. It can only be used from the same computer, so most installations leave Shared Memory enabled. To connect to SQL Server from another computer, you normally use TCP/IP. If TCP/IP is not enabled, right-click **TCP/IP**, and then click **Enable**.
-1. If you changed the enabled setting for any protocol, restart the Database Engine. In the left pane select **SQL Server Services**. In the right-pane, right-click the instance of the Database Engine, and then click **Restart**.
+1. Abra el Administrador de configuración de SQL Server como se explicó anteriormente.
+1. En el panel izquierdo del Administrador de configuración, expanda **Configuración de red de SQL Server**y luego seleccione la instancia de SQL Server a la que quiere conectarse. El panel derecho muestra los protocolos de conexión disponibles. Normalmente la memoria compartida está habilitada. Solo se puede usar desde el mismo equipo, por lo que en la mayoría de las instalaciones se deja habilitada. Para conectarse a SQL Server desde otro equipo, normalmente se usa TCP/IP. Si TCP/IP no está habilitado, haga clic con el botón derecho en **TCP/IP**y luego haga clic en **Habilitar**.
+1. Si modificó la configuración habilitada de cualquier protocolo, reinicie el Motor de base de datos. En el panel izquierdo, seleccione **Servicios de SQL Server**. En el panel derecho, haga clic con el botón derecho en la instancia del motor de base de datos y luego haga clic en **Reiniciar**.
 
-## <a name="testTCPIP"></a>Testing TCP/IP connectivity
+## <a name="testTCPIP"></a>Prueba de la conectividad TCP/IP
 
-Connecting to SQL Server by using TCP/IP requires that Windows can establish the connection. Use the `ping` tool to test TCP.
+La conexión a SQL Server mediante TCP/IP exige que Windows pueda establecerla. Use la herramienta `ping` para probar TCP.
 
-1. On the Start menu, click **Run**. In the **Run** window type **cmd**, and then click **OK**. 
-1. In the command prompt window, type `ping <ip address>` and then the IP address of the computer that is running SQL Server. For example:
+1. En el menú Iniciar, haga clic en **Ejecutar**. En la ventana **Ejecutar** , escriba **cmd**y haga clic en **Aceptar**. 
+1. En la ventana del símbolo del sistema, escriba `ping <ip address>` y luego la dirección IP del equipo con SQL Server. Por ejemplo:
 
     - IPv4: `ping 192.168.1.101`
     - IPv6: `ping fe80::d51d:5ab5:6f09:8f48%11`
 
-1. If your network is properly configured, `ping` returns `Reply from <IP address>` followed by some additional information. If `ping` returns `Destination host unreachable` or `Request timed out`, then TCP/IP is not correctly configured. Errors at this point could indicate a problem with the client computer, the server computer, or something about the network such as a router. To troubleshoot network problems, see[Advanced troubleshooting for TCP/IP issues]a(/windows/client-management/troubleshoot-tcpip).
-1. Next, if the ping test succeeded using the IP address, test that the computer name can be resolved to the TCP/IP address. On the client computer, in the command prompt window, type `ping` and then the computer name of the computer that is running SQL Server. For example, `ping newofficepc` 
-1. If `ping` to the IP address succeeds, but `ping` to the computer returns `Destination host unreachable` or `Request timed out` you might have old (stale) name resolution information cached on the client computer. Type `ipconfig /flushdns` to clear the DNS (Dynamic Name Resolution) cache. Then ping the computer by name again. With the DNS cache empty, the client computer will check for the newest information about the IP address for the server computer. 
-1. If your network is properly configured, `ping` returns `Reply from <IP address>` followed by some additional information. If you can successfully ping the server computer by IP address but receive an error such as `Destination host unreachable.` or `Request timed out.` when pinging by computer name, then name resolution is not correctly configured. (For more information, see the 2006 article previously referenced, [How to Troubleshoot Basic TCP/IP Problems](https://support.microsoft.com/kb/169790).) Successful name resolution is not required to connect to SQL Server, but if the computer name cannot be resolved to an IP address, then connections must be made specifying the IP address. Name resolution can be fixed later.
+1. Si la red está configurada correctamente, `ping` devuelve `Reply from <IP address>` seguido de información adicional. Si `ping` devuelve `Destination host unreachable` o `Request timed out`, significa que TCP/IP no está configurado correctamente. Los errores en este punto podrían indicar un problema con el equipo cliente, el equipo servidor o algo relacionado con la red, como un enrutador. Para solucionar problemas de red, consulte[Solución avanzada de problemas de TCP/IP]a(/windows/client-management/troubleshoot-tcpip).
+1. Después, si la prueba de ping mediante la dirección IP fue correcta, compruebe que el nombre del equipo se pueda resolver en la dirección TCP/IP. En el equipo cliente, en la ventana del símbolo del sistema, escriba `ping` y luego el nombre del equipo con SQL Server. Por ejemplo: `ping newofficepc` 
+1. Si el `ping` a la dirección IP dirección es ha realizado correctamente, pero el `ping` al equipo devuelve `Destination host unreachable` o `Request timed out`, es posible que tenga información antigua (obsoleta) de la resolución de nombres almacenados en caché en el equipo cliente. Escriba `ipconfig /flushdns` para borrar la caché DNS (resolución de nombres dinámica). Luego vuelva a hacer ping al equipo por nombre. Con la caché DNS vacía, el equipo cliente buscará la información más reciente sobre la dirección IP del equipo servidor. 
+1. Si la red está configurada correctamente, `ping` devuelve `Reply from <IP address>` seguido de información adicional. Si puede hacer ping correctamente al equipo servidor por dirección IP pero recibe un error como `Destination host unreachable.` o `Request timed out.` cuando hace ping por nombre de equipo, la resolución de nombres no está configurada correctamente. (Para obtener más información, vea el artículo de 2006 mencionado anteriormente: [How to Troubleshoot Basic TCP/IP Problems [Cómo solucionar problemas básicos de TCP/IP]](https://support.microsoft.com/kb/169790)). La resolución de nombres correcta no es necesaria para conectarse a SQL Server, pero si no se puede resolver el nombre del equipo en una dirección IP, se debe especificar la dirección IP para realizar las conexiones. La resolución de nombres se puede arreglar más adelante.
 
-## <a name = "openport"></a>Open a port in the firewall
+## <a name = "openport"></a>Apertura de un puerto del firewall
 
-By default, the Windows firewall is turned on and will block connections from another computer. To connect using TCP/IP from another computer, on the SQL Server computer you must configure the firewall to allow connections to the TCP port used by the Database Engine. The default instance is listening on TCP port 1433, by default. If you have named instances or if you changed the default instance port, the  TCP port may be listening on another port. See [Get the SQL Server instance TCP port](#getTCP).
+De forma predeterminada, el firewall de Windows está activado y bloqueará las conexiones de otro equipo. Para conectar con TCP/IP desde otro equipo, tiene que configurar el firewall en el equipo de SQL Server de modo que permita las conexiones al puerto TCP usado por el motor de base de datos. La instancia predeterminada es escuchar en el puerto TCP 1433. Si tiene instancias con nombre o ha cambiado el puerto de la instancia predeterminada, es posible que el puerto TCP  escuche en otro puerto. Consulte [Obtención del puerto TCP de la instancia de SQL Server](#getTCP).
 
-If you are connecting to a named instance or a port other than TCP port 1433, you must also open the UDP port 1434 for the SQL Server Browser service. For step by step instruction on opening a port in the Windows firewall, see [Configure a Windows Firewall for Database Engine Access](configure-a-windows-firewall-for-database-engine-access.md).
+Si se conecta a una instancia con nombre o a un puerto distinto al puerto TCP 1433, también debe abrir el puerto UDP 1434 del servicio SQL Server Browser. Para obtener instrucciones paso a paso sobre la apertura de un puerto de Firewall de Windows, consulte [Configurar Firewall de Windows para el acceso al motor de base de datos](configure-a-windows-firewall-for-database-engine-access.md).
 
-## Test the connection
+## <a name="test-the-connection"></a>Comprobación de la conexión
 
-Once you can connect using TCP on the same computer, it's time to try connecting from the client computer. You could theoretically use any client application, but to avoid additional complexity, install the SQL Server Management tools on the client and make the attempt using SQL Server Management Studio.
+Una vez que se pueda conectar con TCP en el mismo equipo, es hora de intentar conectar desde el equipo cliente. En teoría, podría usar cualquier aplicación cliente, pero para evitar más complejidad, instale las herramientas de administración de SQL Server en el cliente y realice el intento con SQL Server Management Studio.
 
-1. On the client computer, using SQL Server Management Studio, attempt to connect using the IP Address and the TCP port number in the format IP address comma port number. For example, `192.168.1.101,1433`. If this connection fails, then you probably have one of the following problems:
+1. En el equipo cliente, con SQL Server Management Studio, intente conectarse mediante la dirección IP y el número de puerto TCP en el formato dirección IP coma número de puerto. Por ejemplo, `192.168.1.101,1433`. Si esta conexión no funciona, es probable que tenga uno de los siguientes problemas:
 
-   - `ping` of the IP address doesn't work, indicating a general TCP configuration problem. Go back to the section [Testing TCP/IP connectivity](#testTCPIP).
-   - SQL Server is not listening on the TCP protocol. Go back to the section [Enable protocols](#enableprotocols).
-   - SQL Server is listening on a port other than the port you specified. Go back to the section [Get the TCP port number](#getTCP).
-   - The SQL Server TCP port is being blocked by the firewall. Go back to the section [Open a port in the firewall](#open-a-port-in-the-firewall).
+   - El `ping` de la dirección IP no funciona, lo que indica un problema de configuración general de TCP. Vuelva a la sección [Prueba de la conectividad TCP/IP](#testTCPIP).
+   - SQL Server no está escuchando en el protocolo TCP. Vuelva a la sección [Habilitar protocolos](#enableprotocols).
+   - SQL Server está escuchando en un puerto distinto al especificado. Vuelva a la sección [Obtención del número de puerto TCP](#getTCP).
+   - El firewall está bloqueando el puerto TCP de SQL Server. Vuelva a la sección [Apertura de un puerto del firewall](#open-a-port-in-the-firewall).
 
-2. Once you can connect using the IP address and port number, attempt to connect using the IP address without a port number. For a default instance, just use the IP address. For a named instance, use the IP address and the instance name in the format IP address backslash instance name, for example `192.168.1.101\<instance name>` If this doesn't work, then you probably have one of the following problems:
+2. Una vez que se pueda conectar con el número de puerto y la dirección IP, intente conectarse con la dirección IP y sin número de puerto. En el caso de una instancia predeterminada, use solo la dirección IP. En el caso de una instancia con nombre, use la dirección IP y el nombre de instancia en el formato dirección IP barra diagonal inversa nombre de instancia, por ejemplo, `192.168.1.101\<instance name>`; si esto no funciona, es probable que tenga uno de los siguientes problemas:
 
-   - If you are connecting to the default instance, it might be listening on a port other than TCP port 1433, and the client isn't attempting to connect to the correct port number.
-   - If you are connecting to a named instance, the port number is not being returned to the client.
+   - Si se conecta a la instancia predeterminada, podría estar escuchando en un puerto distinto al puerto TCP 1433 y el cliente no estaría intentando conectarse al número de puerto correcto.
+   - Si se conecta a una instancia con nombre, el número de puerto no se devuelve al cliente.
 
-   Both of these problems are related to the SQL Server Browser service, which provides the port number to the client. The solutions are:
+   Ambos problemas están relacionados con el servicio SQL Server Browser, que proporciona el número de puerto al cliente. Las soluciones son:
 
-   - Start the SQL Server Browser service. See the instructions to [start browser in SQL Server Configuration Manager](#startbrowser).
-   - The SQL Server Browser service is being blocked by the firewall. Open UDP port 1434 in the firewall. Go back to the section [Open a port in the firewall](#open-a-port-in-the-firewall). Make sure you are opening a UDP port, not a TCP port.
-   - The UDP port 1434 information is being blocked by a router. UDP communication (user datagram protocol) is not designed to pass through routers. This keeps the network from getting filled with low-priority traffic. You might be able to configure your router to forward UDP traffic, or you can decide to always provide the port number when you connect.
-   - If the client computer is using Windows 7 or Windows Server 2008, (or a more recent operating system,) the UDP traffic might be dropped by the client operating system because the response from the server is returned from a different IP address than was queried. This is a security feature blocking "loose source mapping." For more information, see the **Multiple Server IP Addresses** section of the Books Online topic [Troubleshooting: Timeout Expired](https://msdn.microsoft.com/library/ms190181.aspx). This is an article from SQL Server 2008 R2, but the principals still apply. You might be able to configure the client to use the correct IP address, or you can decide to always provide the port number when you connect.
+   - Inicie el servicio SQL Server Browser. Consulte las instrucciones para [iniciar el explorador en Administrador de configuración de SQL Server](#startbrowser).
+   - El firewall está bloqueando el servicio SQL Server Browser. Abra el puerto UDP 1434 del firewall. Vuelva a la sección [Apertura de un puerto del firewall](#open-a-port-in-the-firewall). Asegúrese de estar abriendo un puerto UDP, no un puerto TCP.
+   - Un enrutador está bloqueando la información del puerto UDP 1434. La comunicación UDP (protocolo de datagramas de usuario) no está diseñada para pasar a través de enrutadores. Esto evita que la red se llene de tráfico de baja prioridad. Es posible que pueda configurar el enrutador para reenviar el tráfico UDP. También puede optar por proporcionar siempre el número de puerto al conectarse.
+   - Si el equipo cliente usa Windows 7 o Windows Server 2008 (o un sistema operativo más reciente), el sistema operativo cliente podría eliminar el tráfico UDP porque la respuesta del servidor se devuelve desde una dirección IP diferente a la que se consultó. Esta es una característica de seguridad que bloquea la "asignación de origen no estricta". Para más información, vea la sección **Varias direcciones IP de servidor** del tema de los Libros en pantalla [Solucionar problemas de: tiempo de espera expirado](https://msdn.microsoft.com/library/ms190181.aspx). Se trata de un artículo de SQL Server 2008 R2, pero las entidades de seguridad aún son válidas. Es posible que pueda configurar el cliente para usar la dirección IP correcta. También puede optar por proporcionar siempre el número de puerto al conectarse.
 
-3. Once you can connect using the IP address (or IP address and instance name for a named instance), attempt to connect using the computer name (or computer name and instance name for a named instance). Put `tcp:` in front of the computer name to force a TCP/IP connection. For example, for the default instance on a computer named `ACCNT27`, use `tcp:ACCNT27` For a named instance called `PAYROLL`, on that computer use `tcp:ACCNT27\PAYROLL` If you can connect using the IP address but not using the computer name, then you have a name resolution problem. Go back to the section **Testing TCP/IP connectivity**, section 4.
+3. Una vez que se pueda conectar con la dirección IP (o la dirección IP y el nombre de instancia de una instancia con nombre), intente conectarse con el nombre de equipo (o el nombre de equipo y el nombre de instancia de una instancia con nombre). Coloque `tcp:` delante del nombre del equipo para forzar una conexión TCP/IP. Por ejemplo, en el caso de la instancia predeterminada en un equipo denominado `ACCNT27`, use `tcp:ACCNT27` ; en el caso de una instancia con nombre denominada `PAYROLL`en ese equipo, use `tcp:ACCNT27\PAYROLL` . Si puede conectarse con la dirección IP pero no con el nombre de equipo, entonces tiene un problema de resolución de nombres. Vuelva a la sección 4 de **Prueba de la conectividad TCP/IP**.
 
-4. Once you can connect using the computer name forcing TCP, attempt connecting using the computer name but not forcing TCP. For example, for a default instance use just the computer name such as `CCNT27` For a named instance use the computer name and instance name like `ACCNT27\PAYROLL` If you could connect while forcing TCP, but not without forcing TCP, then the client is probably using another protocol (such as named pipes).
+4. Una vez que se conecte mediante el nombre de equipo al forzar TCP, intente conectarse con el nombre de equipo pero sin forzar TCP. Por ejemplo, en el caso de una instancia predeterminada, use solo el nombre de equipo como `CCNT27` ; en el caso de una instancia con nombre, use el nombre de equipo y el nombre de instancia como `ACCNT27\PAYROLL` . Si puede conectarse al forzar TCP, pero no sin hacerlo, es probable que el cliente esté usando otro protocolo (por ejemplo, canalizaciones con nombre).
 
-    1. On the client computer, using SQL Server Configuration Manager, in the left-pane expand **SQL Native Client** *version* **Configuration**, and then select **Client Protocols**.
-    2. On the right-pane, Make sure TCP/IP is enabled. If TCP/IP is disabled, right-click **TCP/IP** and then click **Enable**.
-    3. Make sure that the protocol order for TCP/IP is a smaller number that the named pipes (or VIA on older versions) protocols. Generally you should leave Shared Memory as order 1 and TCP/IP as order 2. Shared memory is only used when the client and SQL Server are running on the same computer. All enabled protocols are tried in order until one succeeds, except that shared memory is skipped when the connection is not to the same computer.
+    1. En el equipo cliente, en el panel izquierdo del Administrador de configuración de SQL Server, expanda **Configuración de SQL Native Client** *versión* **Configuración** y, luego, seleccione **Protocolos de cliente**.
+    2. En el panel derecho, asegúrese de que TCP/IP esté habilitado. Si TCP/IP está deshabilitado, haga clic con el botón derecho en **TCP/IP** y luego haga clic en **Habilitar**.
+    3. Asegúrese de que el orden de protocolo de TCP/IP sea un número menor que el de los protocolos de canalizaciones con nombre (o VIA en versiones anteriores). Por lo general, debería dejar la memoria compartida como orden 1 y TCP/IP como orden 2. La memoria compartida solo se usa cuando el cliente y SQL Server se están ejecutando en el mismo equipo. Todos los protocolos habilitados se prueban por orden hasta que se establece la conexión, aunque la memoria compartida se omite cuando la conexión no está en el mismo equipo.
