@@ -15,7 +15,7 @@ author: MikeRayMSFT
 ms.author: mikeray
 ---
 # Troubleshoot connecting to the SQL Server Database Engine
-[!INCLUDE[appliesto-ss-xxxx-xxxx-xxx-md](../../includes/appliesto-ss-xxxx-xxxx-xxx-md.md)]
+
 
 This article lists troubleshooting techniques to use when you cannot connect to an instance of the SQL Server Database Engine on a single server.
 
@@ -41,7 +41,7 @@ This error usually means that the client can't find the SQL Server instance. Thi
 - The TCP port number is not specified correctly
 
 > [!TIP]
-> An interactive troubleshooting page is available from [!INCLUDE[msCoName_md](../../includes/msconame-md.md)] Customer Support Services at [Solving Connectivity errors to SQL Server](https://support.microsoft.com/help/4009936/solving-connectivity-errors-to-sql-server).
+> An interactive troubleshooting page is available from  Customer Support Services at [Solving Connectivity errors to SQL Server](https://support.microsoft.com/help/4009936/solving-connectivity-errors-to-sql-server).
 
 ### Not included
 
@@ -101,7 +101,7 @@ This procedure uses SQL Server Management Studio. If you do not have Management 
    > [!NOTE]
    > Some error messages passed to the client intentionally do not give enough information to troubleshoot the problem. This is a security feature to avoid providing an attacker with information about SQL Server. To view the complete information about the error, look in the SQL Server error log. The details are provided there. 
 
-1. If you receive error `18456 Login failed for user`, Books Online topic [MSSQLSERVER_18456](../../relational-databases/errors-events/mssqlserver-18456-database-engine-error.md) contains additional information about error codes. And Aaron Bertrand's blog has a very extensive list of error codes at [Troubleshooting Error 18456](https://sqlblog.org/2011/01/14/troubleshooting-error-18456). You can view the error log with SSMS (if you can connect), in the Management section of the Object Explorer. Otherwise, you can view the error log with the Windows Notepad program. The default location varies with your version and can be changed during setup. The default location for [!INCLUDE[ssSQL15_md](../../includes/sssqlv15-md.md)] is `C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Log\ERRORLOG`. 
+1. If you receive error `18456 Login failed for user`, Books Online topic [MSSQLSERVER_18456](../../relational-databases/errors-events/mssqlserver-18456-database-engine-error.md) contains additional information about error codes. And Aaron Bertrand's blog has a very extensive list of error codes at [Troubleshooting Error 18456](https://sqlblog.org/2011/01/14/troubleshooting-error-18456). You can view the error log with SSMS (if you can connect), in the Management section of the Object Explorer. Otherwise, you can view the error log with the Windows Notepad program. The default location varies with your version and can be changed during setup. The default location for Server\MSSQL15.MSSQLSERVER\MSSQL\Log\ERRORLOG`. 
 
 1. If you can connect using shared memory, test connecting using TCP. You can force a TCP connection by specifying `tcp:` before the name. For example:
 
@@ -131,7 +131,7 @@ In most cases, you connect to the Database Engine from another computer using th
 2. In the Log Viewer, click the **Filter** button on the toolbar. In the **Message contains text** box, type `server is listening on`, click **Apply filter**, and then click **OK**.
 3. A message similar to `Server is listening on [ 'any' <ipv4> 1433]` should be listed. 
 
-This message indicates that this instance of SQL Server is listening on all the IP addresses on this computer (for IP version 4) and is listening to TCP port 1433. (TCP port 1433 is usually the port used by the Database Engine or a default instance of SQL Server. Only one instance of SQL Server can use a port, so if there is more than one instance of SQL Server installed, some instances must use other port numbers.) Make a note of the port number used by the [!INCLUDE[ssNoVersion_md](../../includes/ssnoversion-md.md)] instance that you are trying to connect to.
+This message indicates that this instance of SQL Server is listening on all the IP addresses on this computer (for IP version 4) and is listening to TCP port 1433. (TCP port 1433 is usually the port used by the Database Engine or a default instance of SQL Server. Only one instance of SQL Server can use a port, so if there is more than one instance of SQL Server installed, some instances must use other port numbers.) Make a note of the port number used by the  instance that you are trying to connect to.
 
   > [!NOTE]
   > `IP address 127.0.0.1` is probably listed. It is called the loopback adapter address. Only processes on the same computer can use it to connect. It can be useful for troubleshooting, but you can't use it to connect from another computer.
@@ -161,7 +161,7 @@ Connecting to SQL Server by using TCP/IP requires that Windows can establish the
 
 ## <a name = "openport"></a>Open a port in the firewall
 
-By default, the Windows firewall is turned on and will block connections from another computer. To connect using TCP/IP from another computer, on the SQL Server computer you must configure the firewall to allow connections to the TCP port used by the Database Engine. The default instance is listening on TCP port 1433, by default. If you have named instances or if you changed the default instance port, the [!INCLUDE[ssNoVersion_md](../../includes/ssnoversion-md.md)] TCP port may be listening on another port. See [Get the SQL Server instance TCP port](#getTCP).
+By default, the Windows firewall is turned on and will block connections from another computer. To connect using TCP/IP from another computer, on the SQL Server computer you must configure the firewall to allow connections to the TCP port used by the Database Engine. The default instance is listening on TCP port 1433, by default. If you have named instances or if you changed the default instance port, the  TCP port may be listening on another port. See [Get the SQL Server instance TCP port](#getTCP).
 
 If you are connecting to a named instance or a port other than TCP port 1433, you must also open the UDP port 1434 for the SQL Server Browser service. For step by step instruction on opening a port in the Windows firewall, see [Configure a Windows Firewall for Database Engine Access](configure-a-windows-firewall-for-database-engine-access.md).
 
