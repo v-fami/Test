@@ -1,94 +1,247 @@
 ---
-title: ASP.NET Core directory structure
-author: rick-anderson
-description: Learn about the directory structure of published ASP.NET Core apps.
-monikerRange: '>= aspnetcore-2.2'
-ms.author: riande
-ms.custom: mvc
-ms.date: 03/20/2020
-uid: host-and-deploy/directory-structure
+title: Alterações no nome do princípio do utilizador azure (UPN)
+description: Compreender questões conhecidas e mitigações para alterações da UPN
+services: active-directory
+ms.service: active-directory
+ms.subservice: hybrid
+ms.topic: how-to
+ms.date: 03/13/2020
+ms.author: baselden
+author: barbaraselden
+manager: daveba
+ms.reviewer: jsimmons
+ms.collection: M365-identity-device-management
+ms.openlocfilehash: d11be1d971922095d4a1ace1c81c763134b4e58c
+ms.sourcegitcommit: bd5fee5c56f2cbe74aa8569a1a5bce12a3b3efa6
+ms.translationtype: MT
+ms.contentlocale: pt-PT
+ms.lasthandoff: 04/06/2020
+ms.locfileid: "80743333"
 ---
-# ASP.NET Core directory structure
+# <a name="plan-and-troubleshoot-user-principal-name-changes-in-azure-active-directory"></a><span data-ttu-id="8949f-103">Plano e resolução de problemas O nome principal do utilizador muda no Diretório Ativo do Azure</span><span class="sxs-lookup"><span data-stu-id="8949f-103">Plan and troubleshoot User Principal Name changes in Azure Active Directory</span></span>
 
-::: moniker range=">= aspnetcore-3.0"
+<span data-ttu-id="8949f-104">Um nome principal do utilizador (UPN) é um atributo que é um padrão de comunicação na Internet para as contas dos utilizadores.</span><span class="sxs-lookup"><span data-stu-id="8949f-104">A User Principal Name (UPN) is an attribute that is an internet communication standard for user accounts.</span></span> <span data-ttu-id="8949f-105">A UPN é constituída por um prefixo UPN (nome da conta de utilizador) e um sufixo UPN (um nome de domínio DNS).</span><span class="sxs-lookup"><span data-stu-id="8949f-105">A UPN consists of a UPN prefix (the user account name) and a UPN suffix (a DNS domain name).</span></span> <span data-ttu-id="8949f-106">O prefixo une o sufixo utilizando o símbolo "@".</span><span class="sxs-lookup"><span data-stu-id="8949f-106">The prefix joins the suffix using the "@" symbol.</span></span> <span data-ttu-id="8949f-107">Por exemplo, someone@example.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-107">For example, someone@example.com.</span></span> <span data-ttu-id="8949f-108">A UPN deve ser única entre todos os objetos principais de segurança dentro de uma floresta de diretórios.</span><span class="sxs-lookup"><span data-stu-id="8949f-108">A UPN must be unique among all security principal objects within a directory forest.</span></span> 
 
-The *publish* directory contains the app's deployable assets produced by the [dotnet publish](/dotnet/core/tools/dotnet-publish) command. The directory contains:
+> [!NOTE]
+> <span data-ttu-id="8949f-109">Para os desenvolvedores, recomendamos que utilize o objectID do utilizador como identificador imutável, em vez de UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-109">For developers, we recommend that you use the user objectID as the immutable identifier, rather than UPN.</span></span> <span data-ttu-id="8949f-110">Se as suas aplicações estiverem atualmente a utilizar a UPN, recomendamos que a UPN corresponda ao endereço de e-mail primário do utilizador para melhorar a sua experiência.</span><span class="sxs-lookup"><span data-stu-id="8949f-110">If your applications are currently using UPN, we recommend setting the UPN to match the user's primary email address to improve their experience.</span></span><br> <span data-ttu-id="8949f-111">**Num ambiente híbrido, é importante que a UPN para um utilizador seja idêntica no diretório no local e no Diretório Ativo Azure.**</span><span class="sxs-lookup"><span data-stu-id="8949f-111">**In a hybrid environment, it is important that the UPN for a user is identical in the on-premises directory and in Azure Active Directory**.</span></span>
 
-* Application files
-* Configuration files
-* Static assets
-* Packages
-* A runtime ([self-contained deployment](/dotnet/core/deploying/#self-contained-deployments-scd) only)
+<span data-ttu-id="8949f-112">**Este artigo pressupõe que está a usar a UPN como identificador de utilizador. Aborda o planeamento das alterações da UPN e a recuperação de problemas que podem resultar de alterações da UPN.**</span><span class="sxs-lookup"><span data-stu-id="8949f-112">**This article assumes you're using UPN as the user identifier. It addresses planning for UPN changes, and recovering from issues that may result from UPN changes.**</span></span>
 
-| App Type | Directory Structure |
-| -------- | ------------------- |
-| [Framework-dependent Executable (FDE)](/dotnet/core/deploying/#framework-dependent-executables-fde) | <ul><li>publish&dagger;<ul><li>Views&dagger; MVC apps; if views aren't precompiled</li><li>Pages&dagger; MVC or Razor Pages apps, if pages aren't precompiled</li><li>wwwroot&dagger;</li><li>\*.dll files</li><li>{ASSEMBLY NAME}.deps.json</li><li>{ASSEMBLY NAME}.dll</li><li>{ASSEMBLY NAME}{.EXTENSION} *.exe* extension on Windows, no extension on macOS or Linux</li><li>{ASSEMBLY NAME}.pdb</li><li>{ASSEMBLY NAME}.Views.dll</li><li>{ASSEMBLY NAME}.Views.pdb</li><li>{ASSEMBLY NAME}.runtimeconfig.json</li><li>web.config (IIS deployments)</li><li>createdump ([Linux createdump utility](https://github.com/dotnet/coreclr/blob/master/Documentation/botr/xplat-minidump-generation.md#configurationpolicy))</li><li>\*.so (Linux shared object library)</li><li>\*.a (macOS archive)</li><li>\*.dylib (macOS dynamic library)</li></ul></li></ul> |
-| [Self-contained Deployment (SCD)](/dotnet/core/deploying/#self-contained-deployments-scd) | <ul><li>publish&dagger;<ul><li>Views&dagger; MVC apps, if views aren't precompiled</li><li>Pages&dagger; MVC or Razor Pages apps, if pages aren't precompiled</li><li>wwwroot&dagger;</li><li>\*.dll files</li><li>{ASSEMBLY NAME}.deps.json</li><li>{ASSEMBLY NAME}.dll</li><li>{ASSEMBLY NAME}.exe</li><li>{ASSEMBLY NAME}.pdb</li><li>{ASSEMBLY NAME}.Views.dll</li><li>{ASSEMBLY NAME}.Views.pdb</li><li>{ASSEMBLY NAME}.runtimeconfig.json</li><li>web.config (IIS deployments)</li></ul></li></ul> |
+## <a name="learn-about-upns-and-upn-changes"></a><span data-ttu-id="8949f-113">Conheça as alterações das UPNs e UPN</span><span class="sxs-lookup"><span data-stu-id="8949f-113">Learn about UPNs and UPN changes</span></span>
+<span data-ttu-id="8949f-114">As páginas de entrada frequentemente levam os utilizadores a introduzir o seu endereço de e-mail quando o valor exigido é na verdade a sua UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-114">Sign-in pages often prompt users to enter their email address when the required value is actually their UPN.</span></span> <span data-ttu-id="8949f-115">Por isso, deve alterar a UPN dos utilizadores sempre que o seu endereço de e-mail primário se altere.</span><span class="sxs-lookup"><span data-stu-id="8949f-115">Therefore, you should be sure to change users' UPN anytime their primary email address changes.</span></span>
 
-&dagger;Indicates a directory
+<span data-ttu-id="8949f-116">Os principais endereços de e-mail dos utilizadores podem mudar por muitas razões:</span><span class="sxs-lookup"><span data-stu-id="8949f-116">Users' primary email addresses might change for many reasons:</span></span>
 
-The *publish* directory represents the *content root path*, also called the *application base path*, of the deployment. Whatever name is given to the *publish* directory of the deployed app on the server, its location serves as the server's physical path to the hosted app.
+* <span data-ttu-id="8949f-117">rebranding da empresa</span><span class="sxs-lookup"><span data-stu-id="8949f-117">company rebranding</span></span>
 
-The *wwwroot* directory, if present, only contains static assets.
+* <span data-ttu-id="8949f-118">funcionários movendo-se para diferentes divisões de empresas</span><span class="sxs-lookup"><span data-stu-id="8949f-118">employees moving to different company divisions</span></span> 
 
-## Additional resources
+* <span data-ttu-id="8949f-119">fusões e aquisições</span><span class="sxs-lookup"><span data-stu-id="8949f-119">mergers and acquisitions</span></span>
 
-* [dotnet publish](/dotnet/core/tools/dotnet-publish)
-* [.NET Core application deployment](/dotnet/core/deploying/)
-* [Target frameworks](/dotnet/standard/frameworks)
-* [.NET Core RID Catalog](/dotnet/core/rid-catalog)
+* <span data-ttu-id="8949f-120">alterações no nome do empregado</span><span class="sxs-lookup"><span data-stu-id="8949f-120">employee name changes</span></span>
 
-::: moniker-end
+### <a name="types-of-upn-changes"></a><span data-ttu-id="8949f-121">Tipos de alterações UPN</span><span class="sxs-lookup"><span data-stu-id="8949f-121">Types of UPN changes</span></span>
 
-::: moniker range="< aspnetcore-3.0"
+<span data-ttu-id="8949f-122">Pode alterar uma UPN alterando o prefixo, o sufixo ou ambos.</span><span class="sxs-lookup"><span data-stu-id="8949f-122">You can change a UPN by changing the prefix, suffix, or both.</span></span>
 
-The *publish* directory contains the app's deployable assets produced by the [dotnet publish](/dotnet/core/tools/dotnet-publish) command. The directory contains:
+* <span data-ttu-id="8949f-123">**Alterar o prefixo**.</span><span class="sxs-lookup"><span data-stu-id="8949f-123">**Changing the prefix**.</span></span>
 
-* Application files
-* Configuration files
-* Static assets
-* Packages
-* A runtime ([self-contained deployment](/dotnet/core/deploying/#self-contained-deployments-scd) only)
+   *  <span data-ttu-id="8949f-124">Por exemplo, se o nome de uma pessoa mudar, pode alterar o nome da conta:</span><span class="sxs-lookup"><span data-stu-id="8949f-124">For example, if a person's name changed, you might change their account name:</span></span>  
+<span data-ttu-id="8949f-125">BSimon@contoso.com paraBJohnson@contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-125">‎BSimon@contoso.com to BJohnson@contoso.com</span></span>
 
-| App Type | Directory Structure |
-| -------- | ------------------- |
-| [Framework-dependent Executable (FDE)](/dotnet/core/deploying/#framework-dependent-executables-fde) | <ul><li>publish&dagger;<ul><li>Views&dagger; MVC apps; if views aren't precompiled</li><li>Pages&dagger; MVC or Razor Pages apps, if pages aren't precompiled</li><li>wwwroot&dagger;</li><li>\*.dll files</li><li>{ASSEMBLY NAME}.deps.json</li><li>{ASSEMBLY NAME}.dll</li><li>{ASSEMBLY NAME}{.EXTENSION} *.exe* extension on Windows, no extension on macOS or Linux</li><li>{ASSEMBLY NAME}.pdb</li><li>{ASSEMBLY NAME}.Views.dll</li><li>{ASSEMBLY NAME}.Views.pdb</li><li>{ASSEMBLY NAME}.runtimeconfig.json</li><li>web.config (IIS deployments)</li><li>createdump ([Linux createdump utility](https://github.com/dotnet/coreclr/blob/master/Documentation/botr/xplat-minidump-generation.md#configurationpolicy))</li><li>\*.so (Linux shared object library)</li><li>\*.a (macOS archive)</li><li>\*.dylib (macOS dynamic library)</li></ul></li></ul> |
-| [Self-contained Deployment (SCD)](/dotnet/core/deploying/#self-contained-deployments-scd) | <ul><li>publish&dagger;<ul><li>Views&dagger; MVC apps, if views aren't precompiled</li><li>Pages&dagger; MVC or Razor Pages apps, if pages aren't precompiled</li><li>wwwroot&dagger;</li><li>\*.dll files</li><li>{ASSEMBLY NAME}.deps.json</li><li>{ASSEMBLY NAME}.dll</li><li>{ASSEMBLY NAME}.exe</li><li>{ASSEMBLY NAME}.pdb</li><li>{ASSEMBLY NAME}.Views.dll</li><li>{ASSEMBLY NAME}.Views.pdb</li><li>{ASSEMBLY NAME}.runtimeconfig.json</li><li>web.config (IIS deployments)</li></ul></li></ul> |
+   * <span data-ttu-id="8949f-126">Também pode alterar o padrão corporativo para prefixos:</span><span class="sxs-lookup"><span data-stu-id="8949f-126">You might also change the corporate standard for prefixes:</span></span>  
+<span data-ttu-id="8949f-127">Bsimon@contoso.com paraBritta.Simon@contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-127">‎Bsimon@contoso.com to Britta.Simon@contoso.com</span></span>
 
-&dagger;Indicates a directory
+* <span data-ttu-id="8949f-128">**Alterando o sufixo.**</span><span class="sxs-lookup"><span data-stu-id="8949f-128">**Changing the suffix**.</span></span> <br>
 
-The *publish* directory represents the *content root path*, also called the *application base path*, of the deployment. Whatever name is given to the *publish* directory of the deployed app on the server, its location serves as the server's physical path to the hosted app.
+    <span data-ttu-id="8949f-129">Por exemplo, se uma pessoa mudar de divisão, pode mudar o seu domínio:</span><span class="sxs-lookup"><span data-stu-id="8949f-129">For example, if a person changed divisions, you might change their domain:</span></span> 
 
-The *wwwroot* directory, if present, only contains static assets.
+   * <span data-ttu-id="8949f-130">Britta.Simon@contoso.comParaBritta.Simon@contosolabs.com</span><span class="sxs-lookup"><span data-stu-id="8949f-130">Britta.Simon@contoso.com to Britta.Simon@contosolabs.com</span></span> <br>
+     <span data-ttu-id="8949f-131">Ou</span><span class="sxs-lookup"><span data-stu-id="8949f-131">Or</span></span><br>
+    * <span data-ttu-id="8949f-132">Britta.Simon@corp.contoso.comParaBritta.Simon@labs.contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-132">Britta.Simon@corp.contoso.com to Britta.Simon@labs.contoso.com</span></span> 
 
-Creating a *Logs* folder is useful for [ASP.NET Core Module enhanced debug logging](xref:host-and-deploy/aspnet-core-module#enhanced-diagnostic-logs). Folders in the path provided to the `<handlerSetting>` value aren't created by the module automatically and should pre-exist in the deployment to allow the module to write the debug log.
+<span data-ttu-id="8949f-133">Altere a UPN do utilizador sempre que o endereço de e-mail principal para um utilizador for atualizado.</span><span class="sxs-lookup"><span data-stu-id="8949f-133">Change the user's UPN every time the primary email address for a user is updated.</span></span> <span data-ttu-id="8949f-134">Não importa a razão da mudança de e-mail, a UPN deve ser sempre atualizada para corresponder.</span><span class="sxs-lookup"><span data-stu-id="8949f-134">No matter the reason for the email change, the UPN must always be updated to match.</span></span>
 
-A *Logs* directory can be created for the deployment using one of the following two approaches:
+<span data-ttu-id="8949f-135">Durante a sincronização inicial do Ative Directory para o Azure AD, certifique-se de que os e-mails dos utilizadores são idênticos às suas UPNs.</span><span class="sxs-lookup"><span data-stu-id="8949f-135">During the initial synchronization from Active Directory to Azure AD, ensure the users' emails  are identical to their UPNs.</span></span>
 
-* Add the following `<Target>` element to the project file:
+### <a name="upns-in-active-directory"></a><span data-ttu-id="8949f-136">UPNs em Diretório Ativo</span><span class="sxs-lookup"><span data-stu-id="8949f-136">UPNs in Active Directory</span></span>
 
-   ```xml
-   <Target Name="CreateLogsFolder" AfterTargets="Publish">
-     <MakeDir Directories="$(PublishDir)Logs" 
-              Condition="!Exists('$(PublishDir)Logs')" />
-     <WriteLinesToFile File="$(PublishDir)Logs\.log" 
-                       Lines="Generated file" 
-                       Overwrite="True" 
-                       Condition="!Exists('$(PublishDir)Logs\.log')" />
-   </Target>
-   ```
+<span data-ttu-id="8949f-137">No Diretório Ativo, o sufixo padrão UPN é o nome DNS do domínio onde criou a conta de utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-137">In Active Directory, the default UPN suffix is the DNS name of the domain where you created the user account.</span></span> <span data-ttu-id="8949f-138">Na maioria dos casos, este é o nome de domínio que regista como domínio da empresa na internet.</span><span class="sxs-lookup"><span data-stu-id="8949f-138">In most cases, this is the domain name that you register as the enterprise domain on the internet.</span></span> <span data-ttu-id="8949f-139">Se criar a conta de utilizador no domínio contoso.com, a UPN padrão é</span><span class="sxs-lookup"><span data-stu-id="8949f-139">If you create the user account in the contoso.com domain, the default UPN is</span></span>
 
-   The `<MakeDir>` element creates an empty *Logs* folder in the published output. The element uses the `PublishDir` property to determine the target location for creating the folder. Several deployment methods, such as Web Deploy, skip empty folders during deployment. The `<WriteLinesToFile>` element generates a file in the *Logs* folder, which guarantees deployment of the folder to the server. Folder creation using this approach fails if the worker process doesn't have write access to the target folder.
+username@contoso.com
 
-* Physically create the *Logs* directory on the server in the deployment.
+ <span data-ttu-id="8949f-140">No entanto, pode [adicionar mais sufixos UPN](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain) utilizando domínios e fidedignidades do Diretório Ativo.</span><span class="sxs-lookup"><span data-stu-id="8949f-140">However, you can [add more UPN suffixes](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain) by using Active Directory domains and trusts.</span></span> 
 
-The deployment directory requires Read/Execute permissions. The *Logs* directory requires Read/Write permissions. Additional directories where files are written require Read/Write permissions.
+<span data-ttu-id="8949f-141">Por exemplo, pode querer adicionar labs.contoso.com e ter as UPNs dos utilizadores e o e-mail a refletir isso.</span><span class="sxs-lookup"><span data-stu-id="8949f-141">For example, you may want to add labs.contoso.com and have the users' UPNs and email reflect that.</span></span> <span data-ttu-id="8949f-142">Tornar-se-iam então</span><span class="sxs-lookup"><span data-stu-id="8949f-142">They would then become</span></span>
 
-## Additional resources
+<span data-ttu-id="8949f-143">username@labs.contoso.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-143">username@labs.contoso.com.</span></span>
 
-* [dotnet publish](/dotnet/core/tools/dotnet-publish)
-* [.NET Core application deployment](/dotnet/core/deploying/)
-* [Target frameworks](/dotnet/standard/frameworks)
-* [.NET Core RID Catalog](/dotnet/core/rid-catalog)
+>[!IMPORTANT]
+> <span data-ttu-id="8949f-144">Se as UPNs no diretório Ativo e no Diretório Ativo azure não corresponderem, surgirão questões.</span><span class="sxs-lookup"><span data-stu-id="8949f-144">If UPNs in Active directory and Azure Active Directory do not match, issues will arise.</span></span> <span data-ttu-id="8949f-145">Se estiver [a alterar o sufixo no Diretório Ativo,](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain)deve certificar-se de que foi adicionado e verificado um nome de domínio personalizado correspondente no [Azure AD](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain).</span><span class="sxs-lookup"><span data-stu-id="8949f-145">If you are [changing the suffix in Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain), you must ensure that a matching custom domain name has been [added and verified on Azure AD](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain).</span></span> 
 
-::: moniker-end
+![Uma imagem de domínios verificados](./media/howto-troubleshoot-upn-changes/custom-domains.png)
+
+### <a name="upns-in-azure-active-directory"></a><span data-ttu-id="8949f-147">UPNs em Diretório Ativo Azure</span><span class="sxs-lookup"><span data-stu-id="8949f-147">UPNs in Azure Active Directory</span></span>
+
+<span data-ttu-id="8949f-148">Os utilizadores iniciaram sessão no Azure AD com o valor no seu atributo de userPrincipalName.</span><span class="sxs-lookup"><span data-stu-id="8949f-148">Users sign in to Azure AD with the value in their userPrincipalName attribute.</span></span> 
+
+<span data-ttu-id="8949f-149">Quando utiliza o Azure AD em conjunto com o seu Diretório Ativo no local, as contas de utilizador são sincronizadas utilizando o serviço Azure AD Connect.</span><span class="sxs-lookup"><span data-stu-id="8949f-149">When you use Azure AD in conjunction with your on-premises Active Directory, user accounts are synchronized by using the Azure AD Connect service.</span></span> <span data-ttu-id="8949f-150">Por predefinição, o assistente Azure AD Connect utiliza o atributo do userPrincipalName a partir do Diretório Ativo no local como upn em Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-150">By default the Azure AD Connect wizard uses the userPrincipalName attribute from the on-premises Active Directory as the UPN in Azure AD.</span></span> <span data-ttu-id="8949f-151">Pode alterá-lo para um atributo diferente numa instalação personalizada.</span><span class="sxs-lookup"><span data-stu-id="8949f-151">You can change it to a different attribute in a custom installation.</span></span>
+
+<span data-ttu-id="8949f-152">É importante que tenha um processo definido quando atualizar um Nome Principal de Utilizador (UPN) de um único utilizador, ou para toda a sua organização.</span><span class="sxs-lookup"><span data-stu-id="8949f-152">It's important that you have a defined process when you update a User Principal Name (UPN) of a single user, or for your entire organization.</span></span> 
+
+<span data-ttu-id="8949f-153">Consulte as questões e suposições conhecidas neste documento.</span><span class="sxs-lookup"><span data-stu-id="8949f-153">See the Known issues and workarounds in this document.</span></span>
+
+<span data-ttu-id="8949f-154">Quando estiver a sincronizar as contas dos utilizadores do Ative Directory para o Azure AD, certifique-se de que as UPNs em Diretório Ativo são para domínios verificados em Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-154">When you're synchronizing user accounts from Active Directory to Azure AD, ensure that the UPNs in Active Directory map to verified domains in Azure AD.</span></span>
+
+![Screenshot de domínios verificados](./media/howto-troubleshoot-upn-changes/verified-domains.png)
+
+<span data-ttu-id="8949f-156">Se o valor do atributo do userPrincipalName não corresponder a um domínio verificado em Azure AD, o processo de sincronização substitui o sufixo por um valor padrão .onmicrosoft.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-156">If the value of the userPrincipalName attribute doesn't correspond to a verified domain in Azure AD, the synchronization process replaces the suffix with a default .onmicrosoft.com value.</span></span>
+
+
+### <a name="roll-out-bulk-upn-changes"></a><span data-ttu-id="8949f-157">Alterações UPN a granel</span><span class="sxs-lookup"><span data-stu-id="8949f-157">Roll-out bulk UPN changes</span></span>
+
+<span data-ttu-id="8949f-158">Siga as [melhores práticas para um piloto](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-deployment-plans) para alterações em massa da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-158">Follow the [best practices for a pilot](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-deployment-plans) for bulk UPN changes.</span></span> <span data-ttu-id="8949f-159">Também tenha um plano de reversão testado para reverter as UPNs se encontrar problemas que não podem ser resolvidos rapidamente.</span><span class="sxs-lookup"><span data-stu-id="8949f-159">Also have a tested rollback plan for reverting UPNs if you find issues that can't be quickly resolved.</span></span> <span data-ttu-id="8949f-160">Uma vez que o seu piloto esteja em execução, você pode começar a direcionar pequenos conjuntos de utilizadores com várias funções organizacionais e seus conjuntos específicos de apps ou dispositivos.</span><span class="sxs-lookup"><span data-stu-id="8949f-160">Once your pilot is running, you can start targeting small sets of users with various organizational roles and their specific sets of apps or devices.</span></span>
+
+<span data-ttu-id="8949f-161">Passar por este primeiro subconjunto de utilizadores vai dar-lhe uma boa ideia do que os utilizadores devem esperar como parte da mudança.</span><span class="sxs-lookup"><span data-stu-id="8949f-161">Going through this first subset of users will give you a good idea of what users should expect as part of the change.</span></span> <span data-ttu-id="8949f-162">Inclua esta informação nas comunicações do utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-162">Include this information on your user communications.</span></span>
+
+<span data-ttu-id="8949f-163">Criar um procedimento definido para a alteração das UPNs em utilizadores individuais como parte das operações normais.</span><span class="sxs-lookup"><span data-stu-id="8949f-163">Create a defined procedure for changing UPNs on individual users as part of normal operations.</span></span> <span data-ttu-id="8949f-164">Recomendamos que tenha um procedimento testado que inclua documentação sobre questões conhecidas e suposições.</span><span class="sxs-lookup"><span data-stu-id="8949f-164">We recommend having a tested procedure that includes documentation about known issues and workarounds.</span></span>
+
+<span data-ttu-id="8949f-165">As secções seguintes detalham potenciais questões conhecidas e soluções de suposições quando as UPNs são alteradas.</span><span class="sxs-lookup"><span data-stu-id="8949f-165">The following sections detail potential known issues and workarounds when UPNs are changed.</span></span>
+
+## <a name="apps-known-issues-and-workarounds"></a><span data-ttu-id="8949f-166">Apps conhecidas questões e sobras</span><span class="sxs-lookup"><span data-stu-id="8949f-166">Apps known issues and workarounds</span></span>
+
+<span data-ttu-id="8949f-167">As aplicações de [software como serviço (SaaS)](https://azure.microsoft.com/overview/what-is-saas/) e Line of Business (LoB) dependem frequentemente das UPNs para encontrar informações sobre os utilizadores e armazenar informações sobre o perfil dos utilizadores, incluindo funções.</span><span class="sxs-lookup"><span data-stu-id="8949f-167">[Software as a service (SaaS)](https://azure.microsoft.com/overview/what-is-saas/) and Line of Business (LoB) applications often rely on UPNs to find users and store user profile information, including roles.</span></span> <span data-ttu-id="8949f-168">As aplicações que utilizam [o provisionamento Just in Time](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning) para criar um perfil de utilizador quando os utilizadores iniciarem sessão na aplicação pela primeira vez podem ser afetadas por alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-168">Applications that use [Just in Time provisioning](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning) to create a user profile when users sign in to the app for the first time can be affected by UPN changes.</span></span>
+
+<span data-ttu-id="8949f-169">**Edição conhecida**</span><span class="sxs-lookup"><span data-stu-id="8949f-169">**Known issue**</span></span><br>
+<span data-ttu-id="8949f-170">Alterar a UPN de um utilizador pode quebrar a relação entre o utilizador da AD Azure e o perfil de utilizador criado na aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-170">Changing a user's UPN could break the relationship between the Azure AD user and the user profile created on the application.</span></span> <span data-ttu-id="8949f-171">Se a aplicação utilizar [o provisionamento Just in Time,](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning)poderá criar um novo perfil de utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-171">If the application uses  [Just in Time provisioning](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning), it might create a brand-new user profile.</span></span> <span data-ttu-id="8949f-172">Isto exigirá que o administrador de aplicação efaça alterações manuais para corrigir esta relação.</span><span class="sxs-lookup"><span data-stu-id="8949f-172">This will require the application administrator to make manual changes to fix this relationship.</span></span>
+
+<span data-ttu-id="8949f-173">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-173">**Workaround**</span></span><br>
+<span data-ttu-id="8949f-174">O fornecimento automatizado de [utilizadores da Azure AD](https://docs.microsoft.com/azure/active-directory/manage-apps/user-provisioning) permite-lhe criar, manter e remover automaticamente as identidades dos seus utilizadores em aplicações em nuvem suportadas.</span><span class="sxs-lookup"><span data-stu-id="8949f-174">[Azure AD Automated User Provisioning](https://docs.microsoft.com/azure/active-directory/manage-apps/user-provisioning) lets you automatically create, maintain, and remove your user identities in supported cloud applications.</span></span> <span data-ttu-id="8949f-175">Configurar o fornecimento automatizado de utilizadores nas suas aplicações atualiza automaticamente as UPNs nas aplicações.</span><span class="sxs-lookup"><span data-stu-id="8949f-175">Configuring automated user provisioning on your applications automatically updates UPNs on the applications.</span></span> <span data-ttu-id="8949f-176">Teste as aplicações como parte do lançamento progressivo para validar que não são afetadas por alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-176">Test the applications as part of the progressive rollout to validate that they are not impacted by UPN changes.</span></span>
+<span data-ttu-id="8949f-177">Se for um desenvolvedor, considere [adicionar suporte SCIM à sua aplicação](https://docs.microsoft.com/azure/active-directory/app-provisioning/use-scim-to-provision-users-and-groups) para permitir o fornecimento automático de utilizadores a partir do Azure Ative Directory.</span><span class="sxs-lookup"><span data-stu-id="8949f-177">If you are a developer, consider [adding SCIM support to your application](https://docs.microsoft.com/azure/active-directory/app-provisioning/use-scim-to-provision-users-and-groups) to enable automatic user provisioning from Azure Active Directory.</span></span> 
+
+## <a name="managed-devices-known-issues-and-workarounds"></a><span data-ttu-id="8949f-178">Dispositivos geridos conhecidos questões e sobras</span><span class="sxs-lookup"><span data-stu-id="8949f-178">Managed devices known issues and workarounds</span></span>
+
+<span data-ttu-id="8949f-179">Ao [trazer os seus dispositivos para o Azure AD,](https://docs.microsoft.com/azure/active-directory/devices/overview)maximiza a produtividade dos seus utilizadores através de um único sinal (SSO) através da sua nuvem e recursos no local.</span><span class="sxs-lookup"><span data-stu-id="8949f-179">By [bringing your devices to Azure AD](https://docs.microsoft.com/azure/active-directory/devices/overview), you maximize your users' productivity through single sign-on (SSO) across your cloud and on-premises resources.</span></span>
+
+### <a name="azure-ad-joined-devices"></a><span data-ttu-id="8949f-180">Dispositivos associados ao Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-180">Azure AD joined devices</span></span>
+
+<span data-ttu-id="8949f-181">Os dispositivos aderes à [Azure AD](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join) juntam-se diretamente à Azure AD e permitem que os utilizadores inscrevam o dispositivo utilizando a identidade da sua organização.</span><span class="sxs-lookup"><span data-stu-id="8949f-181">[Azure AD joined](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join) devices are joined directly to Azure AD and allow users to sign in to the device using their organization's identity.</span></span>
+
+<span data-ttu-id="8949f-182">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-182">**Known issues**</span></span> <br>
+<span data-ttu-id="8949f-183">Os utilizadores podem experimentar problemas de inscrição simples com aplicações que dependem da AD Azure para autenticação.</span><span class="sxs-lookup"><span data-stu-id="8949f-183">Users may experience single sign-on issues with applications that depend on Azure AD for authentication.</span></span>
+
+<span data-ttu-id="8949f-184">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-184">**Workaround**</span></span> <br>
+<span data-ttu-id="8949f-185">Dê tempo suficiente para que a alteração UPN sincronize com a AD Azure.</span><span class="sxs-lookup"><span data-stu-id="8949f-185">Allow enough time for the UPN change to sync to Azure AD.</span></span> <span data-ttu-id="8949f-186">Assim que verificar se a nova UPN está refletida no Portal Azure AD, peça ao utilizador que selecione o azulejo "Outro utilizador" para iniciar sessão com a sua nova UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-186">Once you verify that the new UPN is reflected on the Azure AD Portal, ask the user to select the "Other user" tile to sign in with their new UPN.</span></span> <span data-ttu-id="8949f-187">Também pode verificar através [da PowerShell](https://docs.microsoft.com/powershell/module/azuread/get-azureaduser?view=azureadps-2.0).</span><span class="sxs-lookup"><span data-stu-id="8949f-187">You can also verify through [PowerShell](https://docs.microsoft.com/powershell/module/azuread/get-azureaduser?view=azureadps-2.0).</span></span> <span data-ttu-id="8949f-188">Depois de iniciar sessão com a sua nova UPN, as referências à antiga UPN podem ainda aparecer na definição do Windows "Access work or school".</span><span class="sxs-lookup"><span data-stu-id="8949f-188">After signing in with their new UPN, references to the old UPN might still appear on the "Access work or school" Windows setting.</span></span>
+
+![Screenshot de domínios verificados](./media/howto-troubleshoot-upn-changes/other-user.png)
+
+### <a name="hybrid-azure-ad-joined-devices"></a><span data-ttu-id="8949f-190">Dispositivos híbridos associados ao Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-190">Hybrid Azure AD joined devices</span></span>
+
+<span data-ttu-id="8949f-191">Os dispositivos aderes à [Hybrid Azure AD](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join-hybrid) juntam-se ao Ative Directory e ao Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-191">[Hybrid Azure AD joined](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join-hybrid) devices are joined to Active Directory and Azure AD.</span></span> <span data-ttu-id="8949f-192">Pode implementar a adesão do Hybrid Azure AD se o seu ambiente tiver uma pegada de Diretório Ativo no local e também quiser beneficiar das capacidades fornecidas pela Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-192">You can implement Hybrid Azure AD join if your environment has an on-premises Active Directory footprint and you also want to benefit from the capabilities provided by Azure AD.</span></span>
+
+<span data-ttu-id="8949f-193">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-193">**Known issues**</span></span> 
+
+<span data-ttu-id="8949f-194">Os dispositivos aderes ao Windows 10 Hybrid Azure AD são suscetíveis de sofrer reiniciações inesperadas e problemas de acesso.</span><span class="sxs-lookup"><span data-stu-id="8949f-194">Windows 10 Hybrid Azure AD joined devices are likely to experience unexpected restarts and access issues.</span></span>
+
+<span data-ttu-id="8949f-195">Se os utilizadores iniciarem sessão no Windows antes da nova UPN ter sido sincronizada com a AD Azure, ou continuarem a utilizar uma sessão windows existente, poderão experimentar problemas de acesso simples com aplicações que utilizam a AD Azure para autenticação se o Acesso Condicional tiver sido configurado para impor a utilização de dispositivos Híbridos Unidos para aceder a recursos.</span><span class="sxs-lookup"><span data-stu-id="8949f-195">If users sign in to Windows before the new UPN has been synchronized to Azure AD, or continue to use an existing Windows session, they may experience single sign-on issues with applications that use Azure AD for authentication if Conditional Access has been configured to enforce the use of Hybrid Joined devices to access resources.</span></span> 
+
+<span data-ttu-id="8949f-196">Além disso, aparecerá a seguinte mensagem, forçando um reinício após um minuto.</span><span class="sxs-lookup"><span data-stu-id="8949f-196">Additionally, the following message will appear, forcing a restart after one minute.</span></span> 
+
+<span data-ttu-id="8949f-197">"O seu PC recomeçará automaticamente num minuto.</span><span class="sxs-lookup"><span data-stu-id="8949f-197">"Your PC will automatically restart in one minute.</span></span> <span data-ttu-id="8949f-198">O Windows teve um problema e precisa de ser reiniciado.</span><span class="sxs-lookup"><span data-stu-id="8949f-198">Windows ran into a problem and needs to restart.</span></span> <span data-ttu-id="8949f-199">Deve fechar esta mensagem agora e salvar o seu trabalho".</span><span class="sxs-lookup"><span data-stu-id="8949f-199">You should close this message now and save your work".</span></span>
+
+<span data-ttu-id="8949f-200">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-200">**Workaround**</span></span> 
+
+<span data-ttu-id="8949f-201">O aparelho deve ser desacompanhado da AD Azure e reiniciado.</span><span class="sxs-lookup"><span data-stu-id="8949f-201">The device must be unjoined from Azure AD and restarted.</span></span> <span data-ttu-id="8949f-202">Após o reinício, o dispositivo voltará a juntar-se automaticamente ao Azure AD e o utilizador deve iniciar o seu contrato com a nova UPN, selecionando o azulejo "Outro utilizador".</span><span class="sxs-lookup"><span data-stu-id="8949f-202">After restart, the device will automatically join Azure AD again and the user must sign in using the new UPN by selecting the "Other user" tile.</span></span> <span data-ttu-id="8949f-203">Para desjuntar um dispositivo da Azure AD, execute o seguinte comando num pedido de comando:</span><span class="sxs-lookup"><span data-stu-id="8949f-203">To unjoin a device from Azure AD, run the following command at a command prompt:</span></span>
+
+<span data-ttu-id="8949f-204">**dsregcmd /leave**</span><span class="sxs-lookup"><span data-stu-id="8949f-204">**dsregcmd /leave**</span></span>
+
+<span data-ttu-id="8949f-205">O utilizador terá de [se reinscrever](https://docs.microsoft.com/windows/security/identity-protection/hello-for-business/hello-hybrid-cert-whfb-provision) para o Windows Hello for Business se estiver a ser utilizado.</span><span class="sxs-lookup"><span data-stu-id="8949f-205">The user will need to [re-enroll](https://docs.microsoft.com/windows/security/identity-protection/hello-for-business/hello-hybrid-cert-whfb-provision) for Windows Hello for Business if it's being used.</span></span> <span data-ttu-id="8949f-206">Os dispositivos Windows 7 e 8.1 não são afetados por este problema após alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-206">Windows 7 and 8.1 devices are not affected by this issue after UPN changes.</span></span>
+
+## <a name="microsoft-authenticator-known-issues-and-workarounds"></a><span data-ttu-id="8949f-207">Microsoft Autenticador conhecido seleções e seleções</span><span class="sxs-lookup"><span data-stu-id="8949f-207">Microsoft Authenticator known issues and workarounds</span></span>
+
+<span data-ttu-id="8949f-208">A sua organização poderá exigir a utilização da [aplicação Microsoft Authenticator](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) para iniciar sessão e aceder a aplicações e dados organizacionais.</span><span class="sxs-lookup"><span data-stu-id="8949f-208">Your organization might require the use of the [Microsoft Authenticator app](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) to sign in and access organizational applications and data.</span></span> <span data-ttu-id="8949f-209">Embora possa aparecer um nome de utilizador na aplicação, a conta não está configurada para funcionar como um método de verificação até que o utilizador complete o processo de registo.</span><span class="sxs-lookup"><span data-stu-id="8949f-209">Although a username might appear in the app, the account isn't set up to function as a verification method until the user completes the registration process.</span></span>
+
+<span data-ttu-id="8949f-210">A [aplicação Microsoft Authenticator](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) tem quatro funções principais:</span><span class="sxs-lookup"><span data-stu-id="8949f-210">The [Microsoft Authenticator app](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) has four main functions:</span></span>
+
+* <span data-ttu-id="8949f-211">Autenticação de vários fatores através de um código de notificação ou verificação push</span><span class="sxs-lookup"><span data-stu-id="8949f-211">Multi-factor authentication via a push notification or verification code</span></span>
+
+* <span data-ttu-id="8949f-212">Atuar como corretor de autenticação em dispositivos iOS e Android para fornecer um único sinal para aplicações que utilizem [autenticação intermediada](https://docs.microsoft.com/azure/active-directory/develop/brokered-auth)</span><span class="sxs-lookup"><span data-stu-id="8949f-212">Act as an Authentication Broker on iOS and Android devices to provide single sign-on for applications that use [Brokered authentication](https://docs.microsoft.com/azure/active-directory/develop/brokered-auth)</span></span>
+
+* <span data-ttu-id="8949f-213">Registo de dispositivos (também conhecido como Workplace Join) para AD Azure, que é um requisito para outras funcionalidades como Intune App Protection e Device Registration/Management,</span><span class="sxs-lookup"><span data-stu-id="8949f-213">Device registration (also known as Workplace Join) to Azure AD, which is a requirement for other features like Intune App Protection and Device Enrolment/Management,</span></span>
+
+* <span data-ttu-id="8949f-214">Registo telefónico, que requer MFA e registo do dispositivo.</span><span class="sxs-lookup"><span data-stu-id="8949f-214">Phone sign in, which requires MFA and device registration.</span></span>
+
+### <a name="multi-factor-authentication-with-android-devices"></a><span data-ttu-id="8949f-215">Autenticação multi-factor com dispositivos Android</span><span class="sxs-lookup"><span data-stu-id="8949f-215">Multi-Factor Authentication with Android devices</span></span>
+
+<span data-ttu-id="8949f-216">A aplicação Microsoft Authenticator oferece uma opção de verificação fora da banda.</span><span class="sxs-lookup"><span data-stu-id="8949f-216">The Microsoft Authenticator app offers an out-of-band verification option.</span></span> <span data-ttu-id="8949f-217">Em vez de colocar uma chamada telefónica ou SMS automatizada ao utilizador durante o check-in, a [Autenticação Multi-Factor (MFA)](https://docs.microsoft.com/azure/active-directory/authentication/concept-mfa-howitworks) empurra uma notificação para a aplicação Microsoft Authenticator no smartphone ou tablet do utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-217">Instead of placing an automated phone call or SMS to the user during sign-in, [Multi-Factor Authentication (MFA)](https://docs.microsoft.com/azure/active-directory/authentication/concept-mfa-howitworks) pushes a notification to the Microsoft Authenticator app on the user's smartphone or tablet.</span></span> <span data-ttu-id="8949f-218">O utilizador simplesmente toca Em 'Approve' (ou introduz um PIN ou biométrico e toca em "Authenticate") na aplicação para completar o seu início de sessão.</span><span class="sxs-lookup"><span data-stu-id="8949f-218">The user simply taps Approve (or enters a PIN or biometric and taps "Authenticate") in the app to complete their sign-in.</span></span>
+
+<span data-ttu-id="8949f-219">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-219">**Known issues**</span></span> 
+
+<span data-ttu-id="8949f-220">Quando altera a UPN de um utilizador, a antiga UPN ainda apresenta na conta de utilizador e pode não ser recebida uma notificação.</span><span class="sxs-lookup"><span data-stu-id="8949f-220">When you change a user's UPN, the old UPN still displays on the user account and a notification might not be received.</span></span> <span data-ttu-id="8949f-221">[Os códigos](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-faq) de verificação continuam a funcionar.</span><span class="sxs-lookup"><span data-stu-id="8949f-221">[Verification codes](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-faq) continue to work.</span></span>
+
+<span data-ttu-id="8949f-222">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-222">**Workaround**</span></span>
+
+<span data-ttu-id="8949f-223">Se for recebida uma notificação, instrua o utilizador a rejeitar a notificação, abra a aplicação Autenticadora, toque na opção "Verificar notificações" e aprove o pedido de MFA.</span><span class="sxs-lookup"><span data-stu-id="8949f-223">If a notification is received, instruct the user to dismiss the notification, open the Authenticator app, tap the "Check for notifications" option and approve the MFA prompt.</span></span> <span data-ttu-id="8949f-224">Depois disso, a UPN exibida na conta será atualizada.</span><span class="sxs-lookup"><span data-stu-id="8949f-224">After this, the UPN displayed on the account will be updated.</span></span> <span data-ttu-id="8949f-225">Note que a UPN atualizada pode ser apresentada como uma nova conta, isto deve-se à aplicação de outras funcionalidades do Autenticador.</span><span class="sxs-lookup"><span data-stu-id="8949f-225">Note the updated UPN might be displayed as a new account, this is due to other Authenticator functionality being used.</span></span> <span data-ttu-id="8949f-226">Para mais informações consulte as questões adicionais conhecidas neste artigo.</span><span class="sxs-lookup"><span data-stu-id="8949f-226">For more information refer to the additional known issues in this article.</span></span>
+
+### <a name="brokered-authentication"></a><span data-ttu-id="8949f-227">Autenticação intermediada</span><span class="sxs-lookup"><span data-stu-id="8949f-227">Brokered authentication</span></span>
+
+<span data-ttu-id="8949f-228">Em corretores Android e iOS como o Microsoft Authenticator permitem:</span><span class="sxs-lookup"><span data-stu-id="8949f-228">On Android and iOS brokers like Microsoft Authenticator enable:</span></span>
+
+* <span data-ttu-id="8949f-229">Inscrição única (SSO) - Os seus utilizadores não precisarão de iniciar sessão em cada aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-229">Single sign-on (SSO) - Your users won't need to sign in to each application.</span></span>
+
+* <span data-ttu-id="8949f-230">Identificação do dispositivo - O corretor acede ao certificado do dispositivo criado no dispositivo quando foi aderido no local de trabalho.</span><span class="sxs-lookup"><span data-stu-id="8949f-230">Device identification - The broker accesses the device certificate created on the device when it was workplace joined.</span></span>
+
+* <span data-ttu-id="8949f-231">Verificação de identificação de aplicações - Quando uma aplicação chama o corretor, passa o url de redirecionamento, e o corretor verifica-o.</span><span class="sxs-lookup"><span data-stu-id="8949f-231">Application identification verification - When an application calls the broker, it passes its redirect URL, and the broker verifies it.</span></span>
+
+<span data-ttu-id="8949f-232">Além disso, permite que as aplicações participem em funcionalidades mais avançadas, como o [Acesso Condicional,](https://docs.microsoft.com/azure/active-directory/conditional-access/)e suporta [cenários Microsoft Intune](https://docs.microsoft.com/azure/active-directory/develop/msal-net-use-brokers-with-xamarin-apps).</span><span class="sxs-lookup"><span data-stu-id="8949f-232">Additionally, it allows applications to participate in more advanced features such as [Conditional Access](https://docs.microsoft.com/azure/active-directory/conditional-access/), and supports [Microsoft Intune scenarios](https://docs.microsoft.com/azure/active-directory/develop/msal-net-use-brokers-with-xamarin-apps).</span></span>
+
+<span data-ttu-id="8949f-233">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-233">**Known issues**</span></span><br>
+<span data-ttu-id="8949f-234">O utilizador é apresentado com solicitações de autenticação mais interativas em novas aplicações que utilizam o sessão assistido pelo corretor devido a uma incompatibilidade entre o login_hint passado pela aplicação e a UPN armazenada no corretor.</span><span class="sxs-lookup"><span data-stu-id="8949f-234">User is presented with more interactive authentication prompts on new applications that use broker-assisted sign-in due to a mismatch between the login_hint passed by the application and the UPN stored on the broker.</span></span>
+
+<span data-ttu-id="8949f-235">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-235">**Workaround**</span></span> <br> <span data-ttu-id="8949f-236">O utilizador precisa de remover manualmente a conta do Microsoft Authenticator e iniciar um novo início de sessão a partir de uma aplicação assistida por corretor.</span><span class="sxs-lookup"><span data-stu-id="8949f-236">The user needs to manually remove the account from Microsoft Authenticator and start a new sign-in from a broker-assisted application.</span></span> <span data-ttu-id="8949f-237">A conta será adicionada automaticamente após a autenticação inicial.</span><span class="sxs-lookup"><span data-stu-id="8949f-237">The account will be automatically added after the initial authentication.</span></span>
+
+### <a name="device-registration"></a><span data-ttu-id="8949f-238">Registo de dispositivo</span><span class="sxs-lookup"><span data-stu-id="8949f-238">Device registration</span></span>
+
+<span data-ttu-id="8949f-239">A aplicação Microsoft Authenticator é responsável pelo registo do dispositivo na Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-239">The Microsoft Authenticator app is responsible for registering the device to Azure AD.</span></span> <span data-ttu-id="8949f-240">O registo do dispositivo permite que o dispositivo autentime à AD Azure e é um requisito para os seguintes cenários:</span><span class="sxs-lookup"><span data-stu-id="8949f-240">Device registration allows the device to authenticate to Azure AD and is a requirement for the following scenarios:</span></span>
+
+* <span data-ttu-id="8949f-241">Intune App Protection</span><span class="sxs-lookup"><span data-stu-id="8949f-241">Intune App Protection</span></span>
+
+* <span data-ttu-id="8949f-242">Inscrição de Dispositivo Intune</span><span class="sxs-lookup"><span data-stu-id="8949f-242">Intune Device Enrollment</span></span>
+
+* <span data-ttu-id="8949f-243">Sinal de telefone dentro</span><span class="sxs-lookup"><span data-stu-id="8949f-243">Phone Sign In</span></span>
+
+<span data-ttu-id="8949f-244">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-244">**Known issues**</span></span><br>
+<span data-ttu-id="8949f-245">Quando muda a UPN, uma nova conta com a nova UPN aparece listada na aplicação Microsoft Authenticator, enquanto a conta com a antiga UPN ainda está listada.</span><span class="sxs-lookup"><span data-stu-id="8949f-245">When you change the UPN, a new account with the new UPN appears listed on the Microsoft Authenticator app, while the account with the old UPN is still listed.</span></span> <span data-ttu-id="8949f-246">Além disso, os antigos ecrãs UPN na secção registo do dispositivo nas definições da aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-246">Additionally, the old UPN displays on the Device Registration section on the app settings.</span></span> <span data-ttu-id="8949f-247">Não existe qualquer alteração na funcionalidade normal do Registo do Dispositivo ou nos cenários dependentes.</span><span class="sxs-lookup"><span data-stu-id="8949f-247">There is no change in the normal functionality of Device Registration or the dependant scenarios.</span></span>
+
+<span data-ttu-id="8949f-248">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-248">**Workaround**</span></span> <br> <span data-ttu-id="8949f-249">Para remover todas as referências à antiga UPN na aplicação Microsoft Authenticator, instrua o utilizador a remover manualmente as contas antigas e novas do Microsoft Authenticator, voltar a registar-se para o MFA e voltar a juntar-se ao dispositivo.</span><span class="sxs-lookup"><span data-stu-id="8949f-249">To remove all references to the old UPN on the Microsoft Authenticator app, instruct the user to manually remove both the old and new accounts from Microsoft Authenticator, re-register for MFA and rejoin the device.</span></span>
+
+### <a name="phone-sign-in"></a><span data-ttu-id="8949f-250">Registo telefónico</span><span class="sxs-lookup"><span data-stu-id="8949f-250">Phone sign-in</span></span>
+
+<span data-ttu-id="8949f-251">O registo telefónico permite que os utilizadores acedam ao Azure AD sem senha.</span><span class="sxs-lookup"><span data-stu-id="8949f-251">Phone sign-in allows users to sign in to Azure AD without a password.</span></span> <span data-ttu-id="8949f-252">Para ativar o registo do telefone, o utilizador tem de se registar para o MFA utilizando a aplicação Authenticator e, em seguida, ativar o registo do telefone diretamente no Autenticador.</span><span class="sxs-lookup"><span data-stu-id="8949f-252">To enable phone sign-in, the user needs to register for MFA using the Authenticator app and then enable phone sign-in directly on Authenticator.</span></span> <span data-ttu-id="8949f-253">Como parte da configuração, o dispositivo regista-se com a AD Azure.</span><span class="sxs-lookup"><span data-stu-id="8949f-253">As part of the configuration, the device registers with Azure AD.</span></span>
+
+<span data-ttu-id="8949f-254">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-254">**Known issues**</span></span> <br>
+<span data-ttu-id="8949f-255">Os utilizadores não podem utilizar o registo telefónico porque não recebem qualquer notificação.</span><span class="sxs-lookup"><span data-stu-id="8949f-255">Users are not able to use Phone sign-in because they do not receive any notification.</span></span> <span data-ttu-id="8949f-256">Se o utilizador tocar no Check for Notifications, obtém um erro.</span><span class="sxs-lookup"><span data-stu-id="8949f-256">If the user taps on Check for Notifications, they get an error.</span></span>
+
+<span data-ttu-id="8949f-257">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-257">**Workaround**</span></span><br>
+<span data-ttu-id="8949f-258">O utilizador tem de selecionar o menu de entrega na conta ativada para o registo do telefone e selecionar desativar o registo do telefone.</span><span class="sxs-lookup"><span data-stu-id="8949f-258">The user needs to select the drop-down menu on the account enabled for Phone sign-in and select Disable phone sign-in.</span></span> <span data-ttu-id="8949f-259">Se desejar, o registo do telefone pode ser ativado novamente.</span><span class="sxs-lookup"><span data-stu-id="8949f-259">If desired, Phone sign-in can be enabled again.</span></span>
+
+## <a name="security-key-fido2-known-issues-and-workarounds"></a><span data-ttu-id="8949f-260">Chave de Segurança (FIDO2) questões conhecidas e salões</span><span class="sxs-lookup"><span data-stu-id="8949f-260">Security Key (FIDO2) known issues and workarounds</span></span>
+
+<span data-ttu-id="8949f-261">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-261">**Known issues**</span></span> <br>
+<span data-ttu-id="8949f-262">Quando vários utilizadores estão registados na mesma tecla, o sinal no ecrã mostra uma página de seleção de conta onde a antiga UPN é exibida.</span><span class="sxs-lookup"><span data-stu-id="8949f-262">When multiple users are registered on the same key, the sign in screen shows an account selection page where the old UPN is displayed.</span></span> <span data-ttu-id="8949f-263">As inscrições utilizando as Teclas de Segurança não são afetadas pelas alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-263">Sign ins using Security Keys are not affected by UPN changes.</span></span>  
+
+<span data-ttu-id="8949f-264">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-264">**Workaround**</span></span><br>
+<span data-ttu-id="8949f-265">Para remover referências às nsupções antigas, os utilizadores devem redefinir a chave de [segurança e reregistar.](https://docs.microsoft.com/azure/active-directory/authentication/howto-authentication-passwordless-security-key#known-issues)</span><span class="sxs-lookup"><span data-stu-id="8949f-265">To remove references to old UPNs, users must [reset the security key and re-register](https://docs.microsoft.com/azure/active-directory/authentication/howto-authentication-passwordless-security-key#known-issues).</span></span>
+
+## <a name="onedrive-known-issues-and-workarounds"></a><span data-ttu-id="8949f-266">OneDrive conheceu questões e salões</span><span class="sxs-lookup"><span data-stu-id="8949f-266">OneDrive known issues and workarounds</span></span>
+
+<span data-ttu-id="8949f-267">Os utilizadores do OneDrive são conhecidos por experimentarem problemas após as alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-267">OneDrive users are known to experience issues after UPN changes.</span></span> <span data-ttu-id="8949f-268">Para obter mais informações, veja como as [alterações da UPN afetam as funcionalidades do URL oneDrive e do OneDrive](https://docs.microsoft.com/onedrive/upn-changes).</span><span class="sxs-lookup"><span data-stu-id="8949f-268">For more information, see [How UPN changes affect the OneDrive URL and OneDrive features](https://docs.microsoft.com/onedrive/upn-changes).</span></span>
+
+## <a name="next-steps"></a><span data-ttu-id="8949f-269">Passos seguintes</span><span class="sxs-lookup"><span data-stu-id="8949f-269">Next steps</span></span>
+
+<span data-ttu-id="8949f-270">Consulte estes recursos:</span><span class="sxs-lookup"><span data-stu-id="8949f-270">See these resources:</span></span>
+* [<span data-ttu-id="8949f-271">Azure AD Connect: Conceitos de design</span><span class="sxs-lookup"><span data-stu-id="8949f-271">Azure AD Connect: Design concepts</span></span>](https://docs.microsoft.com/azure/active-directory/hybrid/plan-connect-design-concepts)
+
+* [<span data-ttu-id="8949f-272">População UserPrincipalName do Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-272">Azure AD UserPrincipalName population</span></span>](https://docs.microsoft.com/azure/active-directory/hybrid/plan-connect-userprincipalname)
+
+* [<span data-ttu-id="8949f-273">Fichas de ID da plataforma de identidade da Microsoft</span><span class="sxs-lookup"><span data-stu-id="8949f-273">Microsoft identity platform ID tokens</span></span>](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
