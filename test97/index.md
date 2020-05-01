@@ -1,247 +1,310 @@
 ---
-title: Alterações no nome do princípio do utilizador azure (UPN)
-description: Compreender questões conhecidas e mitigações para alterações da UPN
-services: active-directory
-ms.service: active-directory
-ms.subservice: hybrid
-ms.topic: how-to
-ms.date: 03/13/2020
-ms.author: baselden
-author: barbaraselden
-manager: daveba
-ms.reviewer: jsimmons
-ms.collection: M365-identity-device-management
-ms.openlocfilehash: d11be1d971922095d4a1ace1c81c763134b4e58c
-ms.sourcegitcommit: bd5fee5c56f2cbe74aa8569a1a5bce12a3b3efa6
+title: zahrnout soubor
+description: zahrnout soubor
+services: virtual-machines
+author: axayjo
+ms.service: virtual-machines
+ms.topic: include
+ms.date: 05/06/2019
+ms.author: akjosh
+ms.custom: include file
+ms.openlocfilehash: a477114bda7d138a6860d21f2fad75e27d968833
+ms.sourcegitcommit: 849bb1729b89d075eed579aa36395bf4d29f3bd9
 ms.translationtype: MT
-ms.contentlocale: pt-PT
-ms.lasthandoff: 04/06/2020
-ms.locfileid: "80743333"
+ms.contentlocale: cs-CZ
+ms.lasthandoff: 04/28/2020
+ms.locfileid: "80117120"
 ---
-# <a name="plan-and-troubleshoot-user-principal-name-changes-in-azure-active-directory"></a><span data-ttu-id="8949f-103">Plano e resolução de problemas O nome principal do utilizador muda no Diretório Ativo do Azure</span><span class="sxs-lookup"><span data-stu-id="8949f-103">Plan and troubleshoot User Principal Name changes in Azure Active Directory</span></span>
+Galerie sdílených imagí je služba, která pomáhá sestavovat strukturu a organizaci kolem spravovaných imagí. Galerie sdílených imagí poskytují:
 
-<span data-ttu-id="8949f-104">Um nome principal do utilizador (UPN) é um atributo que é um padrão de comunicação na Internet para as contas dos utilizadores.</span><span class="sxs-lookup"><span data-stu-id="8949f-104">A User Principal Name (UPN) is an attribute that is an internet communication standard for user accounts.</span></span> <span data-ttu-id="8949f-105">A UPN é constituída por um prefixo UPN (nome da conta de utilizador) e um sufixo UPN (um nome de domínio DNS).</span><span class="sxs-lookup"><span data-stu-id="8949f-105">A UPN consists of a UPN prefix (the user account name) and a UPN suffix (a DNS domain name).</span></span> <span data-ttu-id="8949f-106">O prefixo une o sufixo utilizando o símbolo "\@".</span><span class="sxs-lookup"><span data-stu-id="8949f-106">The prefix joins the suffix using the "\@" symbol.</span></span> <span data-ttu-id="8949f-107">Por exemplo, someone@example.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-107">For example, someone@example.com.</span></span> <span data-ttu-id="8949f-108">A UPN deve ser única entre todos os objetos principais de segurança dentro de uma floresta de diretórios.</span><span class="sxs-lookup"><span data-stu-id="8949f-108">A UPN must be unique among all security principal objects within a directory forest.</span></span> 
+- Spravovaná globální replikace imagí.
+- Správa verzí a seskupování imagí pro snadnější správu.
+- Vysoce dostupné obrázky s účty zóny redundantního úložiště (ZRS) v oblastech, které podporují Zóny dostupnosti. ZRS nabízí lepší odolnost proti chybám v rámci oblast.
+- Sdílení mezi předplatnými a dokonce i mezi klienty služby Active Directory (AD), a to pomocí RBAC.
+- Škálování nasazení pomocí replik imagí v jednotlivých oblastech.
 
-> [!NOTE]
-> <span data-ttu-id="8949f-109">Para os desenvolvedores, recomendamos que utilize o objectID do utilizador como identificador imutável, em vez de UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-109">For developers, we recommend that you use the user objectID as the immutable identifier, rather than UPN.</span></span> <span data-ttu-id="8949f-110">Se as suas aplicações estiverem atualmente a utilizar a UPN, recomendamos que a UPN corresponda ao endereço de e-mail primário do utilizador para melhorar a sua experiência.</span><span class="sxs-lookup"><span data-stu-id="8949f-110">If your applications are currently using UPN, we recommend setting the UPN to match the user's primary email address to improve their experience.</span></span><br> <span data-ttu-id="8949f-111">**Num ambiente híbrido, é importante que a UPN para um utilizador seja idêntica no diretório no local e no Diretório Ativo Azure.**</span><span class="sxs-lookup"><span data-stu-id="8949f-111">**In a hybrid environment, it is important that the UPN for a user is identical in the on-premises directory and in Azure Active Directory**.</span></span>
+Pomocí Galerie sdílených imagí můžete své image sdílet s různými uživateli, instančními objekty nebo skupinami služby AD v rámci vaší organizace. Sdílené Image je možné replikovat do několika oblastí, pro rychlejší škálování vašich nasazení.
 
-<span data-ttu-id="8949f-112">**Este artigo pressupõe que está a usar a UPN como identificador de utilizador. Aborda o planeamento das alterações da UPN e a recuperação de problemas que podem resultar de alterações da UPN.**</span><span class="sxs-lookup"><span data-stu-id="8949f-112">**This article assumes you're using UPN as the user identifier. It addresses planning for UPN changes, and recovering from issues that may result from UPN changes.**</span></span>
+Spravovaná Image je kopie celého virtuálního počítače (včetně všech připojených datových disků) nebo jenom disku s operačním systémem v závislosti na tom, jak bitovou kopii vytvořit. Při vytváření virtuálního počítače z image se k vytvoření disků pro nový virtuální počítač použije kopie VHD v imagi. Spravovaná bitová kopie zůstává v úložišti a je možné ji znovu použít a znovu vytvořit nové virtuální počítače.
 
-## <a name="learn-about-upns-and-upn-changes"></a><span data-ttu-id="8949f-113">Conheça as alterações das UPNs e UPN</span><span class="sxs-lookup"><span data-stu-id="8949f-113">Learn about UPNs and UPN changes</span></span>
-<span data-ttu-id="8949f-114">As páginas de entrada frequentemente levam os utilizadores a introduzir o seu endereço de e-mail quando o valor exigido é na verdade a sua UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-114">Sign-in pages often prompt users to enter their email address when the required value is actually their UPN.</span></span> <span data-ttu-id="8949f-115">Por isso, deve alterar a UPN dos utilizadores sempre que o seu endereço de e-mail primário se altere.</span><span class="sxs-lookup"><span data-stu-id="8949f-115">Therefore, you should be sure to change users' UPN anytime their primary email address changes.</span></span>
+Pokud máte velký počet spravovaných imagí, které potřebujete udržovat a chtějí je zpřístupnit v celé firmě, můžete použít galerii sdílených imagí jako úložiště, které usnadňuje sdílení imagí. 
 
-<span data-ttu-id="8949f-116">Os principais endereços de e-mail dos utilizadores podem mudar por muitas razões:</span><span class="sxs-lookup"><span data-stu-id="8949f-116">Users' primary email addresses might change for many reasons:</span></span>
+Funkce Galerie sdílených imagí má více typů prostředků:
 
-* <span data-ttu-id="8949f-117">rebranding da empresa</span><span class="sxs-lookup"><span data-stu-id="8949f-117">company rebranding</span></span>
+| Prostředek | Popis|
+|----------|------------|
+| **Spravovaná image** | Základní image, která se dá použít samostatně nebo použít k vytvoření **verze image** v galerii imagí. Spravované image se vytvářejí z [zobecněných](#generalized-and-specialized-images) virtuálních počítačů. Spravovaná bitová kopie je speciální typ VHD, který se dá použít k vytvoření více virtuálních počítačů a dá se teď použít k vytváření verzí sdílených imagí. |
+| **Snímek** | Kopie VHD, která se dá použít k vytvoření **Image verze** Snímky se dají považovat ze [specializovaného](#generalized-and-specialized-images) virtuálního počítače (který se nezobecněný) pak použít samostatně, nebo se snímky datových disků, aby se vytvořila specializovaná verze image.
+| **Galerie imagí** | Podobně jako u Azure Marketplace je **Galerie imagí** úložiště pro správu a sdílení imagí, ale Vy řídíte, kdo má přístup. |
+| **Definice obrázku** | Image jsou definované v rámci Galerie a obsahují informace o imagi a požadavcích na jejich použití v rámci vaší organizace. Můžete zahrnout informace, jako je například to, zda je obrázek zobecněný nebo specializovaný, operační systém, minimální a maximální požadavky na paměť a poznámky k verzi. Je definicí typu obrázku. |
+| **Verze image** | **Verze image** je to, co použijete k vytvoření virtuálního počítače při použití galerie. V případě potřeby můžete mít v prostředí k dispozici více verzí bitové kopie. Podobně jako u spravované image při použití **verze image** k vytvoření virtuálního počítače se verze image používá k vytvoření nových disků pro virtuální počítač. Verze bitové kopie lze použít několikrát. |
 
-* <span data-ttu-id="8949f-118">funcionários movendo-se para diferentes divisões de empresas</span><span class="sxs-lookup"><span data-stu-id="8949f-118">employees moving to different company divisions</span></span> 
+<br>
 
-* <span data-ttu-id="8949f-119">fusões e aquisições</span><span class="sxs-lookup"><span data-stu-id="8949f-119">mergers and acquisitions</span></span>
+![Obrázek znázorňující, jak můžete mít v galerii více verzí obrazu](./media/shared-image-galleries/shared-image-gallery.png)
 
-* <span data-ttu-id="8949f-120">alterações no nome do empregado</span><span class="sxs-lookup"><span data-stu-id="8949f-120">employee name changes</span></span>
+## <a name="image-definitions"></a>Definice obrázků
 
-### <a name="types-of-upn-changes"></a><span data-ttu-id="8949f-121">Tipos de alterações UPN</span><span class="sxs-lookup"><span data-stu-id="8949f-121">Types of UPN changes</span></span>
+Definice obrázků jsou logické seskupení pro verze image. Definice image obsahuje informace o tom, proč se image vytvořila, jaký operační systém je k dispozici, a informace o použití bitové kopie. Definice obrázku je jako plán pro všechny podrobnosti o vytváření konkrétní image. Virtuální počítač nebudete nasazovat z definice image, ale z verze image vytvořené z definice.
 
-<span data-ttu-id="8949f-122">Pode alterar uma UPN alterando o prefixo, o sufixo ou ambos.</span><span class="sxs-lookup"><span data-stu-id="8949f-122">You can change a UPN by changing the prefix, suffix, or both.</span></span>
+Existují tři parametry pro každou definici obrázku, které jsou používány v kombinaci – **Vydavatel**, **Nabídka** a **SKU**. Slouží k vyhledání konkrétní definice obrázku. Můžete mít verze bitové kopie, které sdílejí jednu nebo dvě, ale ne všechny tři hodnoty.  Tady jsou například tři definice obrázků a jejich hodnoty:
 
-* <span data-ttu-id="8949f-123">**Alterar o prefixo**.</span><span class="sxs-lookup"><span data-stu-id="8949f-123">**Changing the prefix**.</span></span>
+|Definice image|Vydavatel|Nabídka|Skladová jednotka (SKU)|
+|---|---|---|---|
+|myImage1|Contoso|Finance|Back-end|
+|myImage2|Contoso|Finance|Front-end|
+|myImage3|Testování|Finance|Front-end|
 
-   *  <span data-ttu-id="8949f-124">Por exemplo, se o nome de uma pessoa mudar, pode alterar o nome da conta:</span><span class="sxs-lookup"><span data-stu-id="8949f-124">For example, if a person's name changed, you might change their account name:</span></span>  
-<span data-ttu-id="8949f-125">BSimon@contoso.com paraBJohnson@contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-125">‎BSimon@contoso.com to BJohnson@contoso.com</span></span>
+Všechny tři z nich mají jedinečné sady hodnot. Formát je podobný jako při současném zadání vydavatele, nabídky a SKU pro [Azure Marketplace imagí](../articles/virtual-machines/windows/cli-ps-findimage.md) v Azure PowerShell získat nejnovější verzi image na webu Marketplace. Každá definice obrázku musí mít jedinečnou sadu těchto hodnot.
 
-   * <span data-ttu-id="8949f-126">Também pode alterar o padrão corporativo para prefixos:</span><span class="sxs-lookup"><span data-stu-id="8949f-126">You might also change the corporate standard for prefixes:</span></span>  
-<span data-ttu-id="8949f-127">Bsimon@contoso.com paraBritta.Simon@contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-127">‎Bsimon@contoso.com to Britta.Simon@contoso.com</span></span>
+Níže jsou uvedené další parametry, které je možné nastavit v definici image, abyste mohli snadněji sledovat své prostředky:
 
-* <span data-ttu-id="8949f-128">**Alterando o sufixo.**</span><span class="sxs-lookup"><span data-stu-id="8949f-128">**Changing the suffix**.</span></span> <br>
+* Stav operačního systému – stav operačního systému můžete nastavit na [generalizované nebo specializované](#generalized-and-specialized-images).
+* Operační systém může být buď Windows, nebo Linux.
+* Popis – použijte popis k poskytnutí podrobnějších informací o tom, proč existuje definice obrázku. Můžete mít například definici image pro front-end Server, ve kterém je aplikace předem nainstalovaná.
+* Smlouva EULA – dá se použít k odkazování na licenční smlouvu s koncovým uživatelem, která je specifická pro definici image.
+* Prohlášení o ochraně osobních údajů a poznámky k verzi – můžete ukládat poznámky k verzi a prohlášení o ochraně osobních údajů ve službě Azure Storage a zadat identifikátor URI pro přístup k nim jako součást definice image.
+* Datum ukončení životnosti – připojte k definici obrázku datum ukončení životnosti, aby bylo možné pomocí automatizace odstranit staré definice imagí.
+* Značka – při vytváření definice obrázku můžete přidat značky. Další informace o značkách najdete v tématu [použití značek k uspořádání prostředků](../articles/azure-resource-manager/management/tag-resources.md) .
+* Minimální a maximální doporučení pro vCPU a paměť – Pokud má vaše image doporučení vCPU a paměti, můžete tyto informace připojit k definici image.
+* Nepovolené typy disků – můžete zadat informace o požadavcích na úložiště pro váš virtuální počítač. Pokud například bitová kopie není vhodná pro disky se standardním pevným diskem, přidáte je do seznamu zakázat.
 
-    <span data-ttu-id="8949f-129">Por exemplo, se uma pessoa mudar de divisão, pode mudar o seu domínio:</span><span class="sxs-lookup"><span data-stu-id="8949f-129">For example, if a person changed divisions, you might change their domain:</span></span> 
+## <a name="generalized-and-specialized-images"></a>Generalizované a specializované image
 
-   * <span data-ttu-id="8949f-130">Britta.Simon@contoso.comParaBritta.Simon@contosolabs.com</span><span class="sxs-lookup"><span data-stu-id="8949f-130">Britta.Simon@contoso.com to Britta.Simon@contosolabs.com</span></span> <br>
-     <span data-ttu-id="8949f-131">Ou</span><span class="sxs-lookup"><span data-stu-id="8949f-131">Or</span></span><br>
-    * <span data-ttu-id="8949f-132">Britta.Simon@corp.contoso.comParaBritta.Simon@labs.contoso.com</span><span class="sxs-lookup"><span data-stu-id="8949f-132">Britta.Simon@corp.contoso.com to Britta.Simon@labs.contoso.com</span></span> 
+Galerie sdílených imagí podporuje dva stavy operačních systémů. Image obvykle vyžadují, aby byl virtuální počítač použitý k vytvoření image zobecněný předtím, než Image převezme. Generalizace je proces, který z virtuálního počítače odebere informace specifické pro počítač a uživatele. V systému Windows se používá také nástroj Sysprep. Pro Linux můžete použít [waagent](https://github.com/Azure/WALinuxAgent) `-deprovision` nebo `-deprovision+user` parametry.
 
-<span data-ttu-id="8949f-133">Altere a UPN do utilizador sempre que o endereço de e-mail principal para um utilizador for atualizado.</span><span class="sxs-lookup"><span data-stu-id="8949f-133">Change the user's UPN every time the primary email address for a user is updated.</span></span> <span data-ttu-id="8949f-134">Não importa a razão da mudança de e-mail, a UPN deve ser sempre atualizada para corresponder.</span><span class="sxs-lookup"><span data-stu-id="8949f-134">No matter the reason for the email change, the UPN must always be updated to match.</span></span>
+Specializované virtuální počítače neprošly procesem odebrání informací a účtů specifických pro konkrétní počítač. Virtuální počítače vytvořené z specializovaných imagí navíc `osProfile` k nim přidruženy nejsou. To znamená, že speciální obrázky budou mít určitá omezení.
 
-<span data-ttu-id="8949f-135">Durante a sincronização inicial do Ative Directory para o Azure AD, certifique-se de que os e-mails dos utilizadores são idênticos às suas UPNs.</span><span class="sxs-lookup"><span data-stu-id="8949f-135">During the initial synchronization from Active Directory to Azure AD, ensure the users' emails  are identical to their UPNs.</span></span>
+- Účty, které se dají použít k přihlášení k virtuálnímu počítači, se dají použít taky na jakémkoli virtuálním počítači vytvořeném pomocí specializované image, která se vytvoří z tohoto virtuálního počítače.
+- Virtuální počítače budou mít **název počítače** , ze kterého se image povedla. Měli byste změnit název počítače, aby se předešlo kolizím.
+- `osProfile` Je způsob, jakým se do virtuálního počítače předávají nějaké citlivé `secrets`informace pomocí. To může způsobovat problémy s využitím trezoru klíčů, WinRM a dalších `secrets` funkcí, `osProfile`které používají. V některých případech můžete tato omezení obejít pomocí identit spravované služby (MSI).
 
-### <a name="upns-in-active-directory"></a><span data-ttu-id="8949f-136">UPNs em Diretório Ativo</span><span class="sxs-lookup"><span data-stu-id="8949f-136">UPNs in Active Directory</span></span>
+> [!IMPORTANT]
+> Specializované obrázky jsou momentálně ve verzi Public Preview.
+> Tato verze Preview se poskytuje bez smlouvy o úrovni služeb a nedoporučuje se pro úlohy v produkčním prostředí. Některé funkce se nemusí podporovat nebo mohou mít omezené možnosti. Další informace najdete v [dodatečných podmínkách použití pro verze Preview v Microsoft Azure](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
+>
+> **Známá omezení verze Preview** Virtuální počítače se dají vytvářet jenom z specializovaných imagí pomocí portálu nebo rozhraní API. Pro verzi Preview není podporována podpora rozhraní příkazového řádku nebo PowerShellu.
 
-<span data-ttu-id="8949f-137">No Diretório Ativo, o sufixo padrão UPN é o nome DNS do domínio onde criou a conta de utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-137">In Active Directory, the default UPN suffix is the DNS name of the domain where you created the user account.</span></span> <span data-ttu-id="8949f-138">Na maioria dos casos, este é o nome de domínio que regista como domínio da empresa na internet.</span><span class="sxs-lookup"><span data-stu-id="8949f-138">In most cases, this is the domain name that you register as the enterprise domain on the internet.</span></span> <span data-ttu-id="8949f-139">Se criar a conta de utilizador no domínio contoso.com, a UPN padrão é</span><span class="sxs-lookup"><span data-stu-id="8949f-139">If you create the user account in the contoso.com domain, the default UPN is</span></span>
 
-username@contoso.com
+## <a name="regional-support"></a>Místní podpora
 
- <span data-ttu-id="8949f-140">No entanto, pode [adicionar mais sufixos UPN](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain) utilizando domínios e fidedignidades do Diretório Ativo.</span><span class="sxs-lookup"><span data-stu-id="8949f-140">However, you can [add more UPN suffixes](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain) by using Active Directory domains and trusts.</span></span> 
+Zdrojové oblasti jsou uvedené v následující tabulce. Všechny veřejné oblasti můžou být cílové oblasti, ale pokud je chcete replikovat do Austrálie Central a Austrálie – střed 2, musíte mít své předplatné na seznamu povolených. Pokud chcete požádat o seznam povolených, navštivte:https://azure.microsoft.com/global-infrastructure/australia/contact/
 
-<span data-ttu-id="8949f-141">Por exemplo, pode querer adicionar labs.contoso.com e ter as UPNs dos utilizadores e o e-mail a refletir isso.</span><span class="sxs-lookup"><span data-stu-id="8949f-141">For example, you may want to add labs.contoso.com and have the users' UPNs and email reflect that.</span></span> <span data-ttu-id="8949f-142">Tornar-se-iam então</span><span class="sxs-lookup"><span data-stu-id="8949f-142">They would then become</span></span>
 
-<span data-ttu-id="8949f-143">username@labs.contoso.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-143">username@labs.contoso.com.</span></span>
+| Zdrojové oblasti        |                   |                    |                    |
+| --------------------- | ----------------- | ------------------ | ------------------ |
+| Austrálie – střed     | Čína – východ        | Indie – jih        | Západní Evropa        |
+| Austrálie – střed 2   | Čína – východ 2      | Jihovýchodní Asie     | Spojené království – jih           |
+| Austrálie – východ        | Čína – sever       | Japonsko – východ         | Spojené království – západ            |
+| Austrálie – jihovýchod   | Čína – sever 2     | Japonsko – západ         | US DoD – střed     |
+| Brazílie – jih          | Východní Asie         | Jižní Korea – střed      | US DoD – východ        |
+| Střední Kanada        | USA – východ           | Jižní Korea – jih        | USA (Gov) – Arizona     |
+| Kanada – východ           | USA – východ 2         | USA – středosever   | USA (Gov) – Texas       |
+| Indie – střed         | Východní USA 2 EUAP    | Severní Evropa       | USA (Gov) – Virginia    |
+| USA – střed            | Francie – střed    | USA – středojih   | Indie – západ         |
+| Střed USA EUAP       | Francie – jih      | USA – středozápad    | USA – západ            |
+|                       |                   |                    | USA – západ 2          |
 
->[!IMPORTANT]
-> <span data-ttu-id="8949f-144">Se as UPNs no diretório Ativo e no Diretório Ativo azure não corresponderem, surgirão questões.</span><span class="sxs-lookup"><span data-stu-id="8949f-144">If UPNs in Active directory and Azure Active Directory do not match, issues will arise.</span></span> <span data-ttu-id="8949f-145">Se estiver [a alterar o sufixo no Diretório Ativo,](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain)deve certificar-se de que foi adicionado e verificado um nome de domínio personalizado correspondente no [Azure AD](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain).</span><span class="sxs-lookup"><span data-stu-id="8949f-145">If you are [changing the suffix in Active Directory](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain), you must ensure that a matching custom domain name has been [added and verified on Azure AD](https://docs.microsoft.com/azure/active-directory/fundamentals/add-custom-domain).</span></span> 
 
-![Uma imagem de domínios verificados](./media/howto-troubleshoot-upn-changes/custom-domains.png)
 
-### <a name="upns-in-azure-active-directory"></a><span data-ttu-id="8949f-147">UPNs em Diretório Ativo Azure</span><span class="sxs-lookup"><span data-stu-id="8949f-147">UPNs in Azure Active Directory</span></span>
+## <a name="limits"></a>Omezení 
 
-<span data-ttu-id="8949f-148">Os utilizadores iniciaram sessão no Azure AD com o valor no seu atributo de userPrincipalName.</span><span class="sxs-lookup"><span data-stu-id="8949f-148">Users sign in to Azure AD with the value in their userPrincipalName attribute.</span></span> 
+Pro nasazení prostředků pomocí galerií sdílených imagí existují omezení pro každý odběr:
+- Galerie sdílených imagí 100 na jedno předplatné, podle jednotlivých oblastí
+- 1 000 definice imagí pro každé předplatné v jednotlivých oblastech
+- verze image 10 000 na jedno předplatné v jednotlivých oblastech
+- Všechny disky připojené k imagi musí být menší nebo rovny 1 TB.
 
-<span data-ttu-id="8949f-149">Quando utiliza o Azure AD em conjunto com o seu Diretório Ativo no local, as contas de utilizador são sincronizadas utilizando o serviço Azure AD Connect.</span><span class="sxs-lookup"><span data-stu-id="8949f-149">When you use Azure AD in conjunction with your on-premises Active Directory, user accounts are synchronized by using the Azure AD Connect service.</span></span> <span data-ttu-id="8949f-150">Por predefinição, o assistente Azure AD Connect utiliza o atributo do userPrincipalName a partir do Diretório Ativo no local como upn em Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-150">By default the Azure AD Connect wizard uses the userPrincipalName attribute from the on-premises Active Directory as the UPN in Azure AD.</span></span> <span data-ttu-id="8949f-151">Pode alterá-lo para um atributo diferente numa instalação personalizada.</span><span class="sxs-lookup"><span data-stu-id="8949f-151">You can change it to a different attribute in a custom installation.</span></span>
+Další informace najdete v tématu o tom, jak kontrolovat [využití prostředků proti omezením](https://docs.microsoft.com/azure/networking/check-usage-against-limits) , v příkladech, jak kontrolovat aktuální využití.
+ 
+## <a name="scaling"></a>Škálování
+Galerie sdílených imagí umožňuje zadat počet replik, které má Azure uchovávat pro image. To pomáhá scénářům nasazení ve více virtuálních počítačích, protože nasazení virtuálních počítačů je možné rozložit do různých replik, které omezují nutnost zpracování vytváření instancí z důvodu přetížení jedné repliky.
 
-<span data-ttu-id="8949f-152">É importante que tenha um processo definido quando atualizar um Nome Principal de Utilizador (UPN) de um único utilizador, ou para toda a sua organização.</span><span class="sxs-lookup"><span data-stu-id="8949f-152">It's important that you have a defined process when you update a User Principal Name (UPN) of a single user, or for your entire organization.</span></span> 
+Pomocí Galerie sdílených imagí teď můžete nasadit až 1 000 instancí virtuálních počítačů v rámci sady škálování virtuálních počítačů (od 600 do spravovaných imagí). Repliky imagí poskytují lepší výkon, spolehlivost a konzistenci nasazení. V každé cílové oblasti můžete nastavit jiný počet replik, a to na základě rozsahu potřeb pro oblast. Vzhledem k tomu, že každá replika je hluboká kopie vaší image, pomáhá škálovat vaše nasazení lineárně pomocí každé další repliky. I když nerozumíme, že žádné dva obrázky nebo oblasti jsou stejné, tady je naše obecné pokyny k používání replik v oblasti:
 
-<span data-ttu-id="8949f-153">Consulte as questões e suposições conhecidas neste documento.</span><span class="sxs-lookup"><span data-stu-id="8949f-153">See the Known issues and workarounds in this document.</span></span>
+- U nasazení VMSS (Virtual Machine Scale set) – pro každé 20 virtuálních počítačů, které vytvoříte souběžně, doporučujeme zachovat jednu repliku. Pokud například vytváříte virtuální počítače 120 souběžně pomocí stejné image v oblasti, doporučujeme, abyste zachovali aspoň 6 replik vaší image. 
+- Pro nasazení VMSS (Virtual Machine Scale set) – pro každé nasazení sady škálování s až 600 instancemi Doporučujeme zachovat aspoň jednu repliku. Pokud například vytváříte 5 sad škálování souběžně, každý s 600 instancemi virtuálních počítačů pomocí stejné image v jedné oblasti, doporučujeme, abyste zachovali aspoň 5 replik vaší image. 
 
-<span data-ttu-id="8949f-154">Quando estiver a sincronizar as contas dos utilizadores do Ative Directory para o Azure AD, certifique-se de que as UPNs em Diretório Ativo são para domínios verificados em Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-154">When you're synchronizing user accounts from Active Directory to Azure AD, ensure that the UPNs in Active Directory map to verified domains in Azure AD.</span></span>
+Vždycky doporučujeme, abyste převedli počet replik z důvodu faktorů, jako je velikost obrázku, obsah a typ operačního systému.
 
-![Screenshot de domínios verificados](./media/howto-troubleshoot-upn-changes/verified-domains.png)
+![Obrázek znázorňující, jak můžete škálovat obrázky](./media/shared-image-galleries/scaling.png)
 
-<span data-ttu-id="8949f-156">Se o valor do atributo do userPrincipalName não corresponder a um domínio verificado em Azure AD, o processo de sincronização substitui o sufixo por um valor padrão .onmicrosoft.com.</span><span class="sxs-lookup"><span data-stu-id="8949f-156">If the value of the userPrincipalName attribute doesn't correspond to a verified domain in Azure AD, the synchronization process replaces the suffix with a default .onmicrosoft.com value.</span></span>
+## <a name="make-your-images-highly-available"></a>Zajištění vysoké dostupnosti imagí
 
+[Azure Zone redundantní úložiště (ZRS)](https://azure.microsoft.com/blog/azure-zone-redundant-storage-in-public-preview/) zajišťuje odolnost proti selhání zóny dostupnosti v oblasti. Díky obecné dostupnosti Galerie sdílených imagí si můžete vybrat ukládání imagí v účtech ZRS v oblastech s Zóny dostupnosti. 
 
-### <a name="roll-out-bulk-upn-changes"></a><span data-ttu-id="8949f-157">Alterações UPN a granel</span><span class="sxs-lookup"><span data-stu-id="8949f-157">Roll-out bulk UPN changes</span></span>
+Můžete také zvolit typ účtu pro každou cílovou oblast. Výchozí typ účtu úložiště je Standard_LRS, ale můžete zvolit Standard_ZRS pro oblasti s Zóny dostupnosti. [Tady se můžete](https://docs.microsoft.com/azure/storage/common/storage-redundancy-zrs)podívat na oblast dostupnosti ZRS.
 
-<span data-ttu-id="8949f-158">Siga as [melhores práticas para um piloto](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-deployment-plans) para alterações em massa da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-158">Follow the [best practices for a pilot](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-deployment-plans) for bulk UPN changes.</span></span> <span data-ttu-id="8949f-159">Também tenha um plano de reversão testado para reverter as UPNs se encontrar problemas que não podem ser resolvidos rapidamente.</span><span class="sxs-lookup"><span data-stu-id="8949f-159">Also have a tested rollback plan for reverting UPNs if you find issues that can't be quickly resolved.</span></span> <span data-ttu-id="8949f-160">Uma vez que o seu piloto esteja em execução, você pode começar a direcionar pequenos conjuntos de utilizadores com várias funções organizacionais e seus conjuntos específicos de apps ou dispositivos.</span><span class="sxs-lookup"><span data-stu-id="8949f-160">Once your pilot is running, you can start targeting small sets of users with various organizational roles and their specific sets of apps or devices.</span></span>
+![Obrázek znázorňující ZRS](./media/shared-image-galleries/zrs.png)
 
-<span data-ttu-id="8949f-161">Passar por este primeiro subconjunto de utilizadores vai dar-lhe uma boa ideia do que os utilizadores devem esperar como parte da mudança.</span><span class="sxs-lookup"><span data-stu-id="8949f-161">Going through this first subset of users will give you a good idea of what users should expect as part of the change.</span></span> <span data-ttu-id="8949f-162">Inclua esta informação nas comunicações do utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-162">Include this information on your user communications.</span></span>
+## <a name="replication"></a>Replikace
+Galerie sdílených imagí také umožňuje automatické replikace imagí do jiných oblastí Azure. Každá verze sdílené bitové kopie se dá replikovat do různých oblastí v závislosti na tom, co je pro vaši organizaci smysl. Jedním z příkladů je vždycky replikovat nejnovější image do více oblastí, zatímco všechny starší verze jsou dostupné jenom v jedné oblasti. To může přispět k úspory nákladů na úložiště pro verze sdílených imagí. 
 
-<span data-ttu-id="8949f-163">Criar um procedimento definido para a alteração das UPNs em utilizadores individuais como parte das operações normais.</span><span class="sxs-lookup"><span data-stu-id="8949f-163">Create a defined procedure for changing UPNs on individual users as part of normal operations.</span></span> <span data-ttu-id="8949f-164">Recomendamos que tenha um procedimento testado que inclua documentação sobre questões conhecidas e suposições.</span><span class="sxs-lookup"><span data-stu-id="8949f-164">We recommend having a tested procedure that includes documentation about known issues and workarounds.</span></span>
+Oblasti, do kterých se replikuje verze sdíleného obrázku, se dá po vytvoření aktualizovat. Doba potřebná k replikaci do různých oblastí závisí na množství kopírovaných dat a na počtu oblastí, do kterých je verze replikována. V některých případech to může trvat několik hodin. Při replikaci se můžete podívat na stav replikace v jednotlivých oblastech. Po dokončení replikace imagí v oblasti můžete nasadit virtuální počítač nebo sadu škálování s použitím této verze image v oblasti.
 
-<span data-ttu-id="8949f-165">As secções seguintes detalham potenciais questões conhecidas e soluções de suposições quando as UPNs são alteradas.</span><span class="sxs-lookup"><span data-stu-id="8949f-165">The following sections detail potential known issues and workarounds when UPNs are changed.</span></span>
+![Obrázek znázorňující, jak můžete replikovat image](./media/shared-image-galleries/replication.png)
 
-## <a name="apps-known-issues-and-workarounds"></a><span data-ttu-id="8949f-166">Apps conhecidas questões e sobras</span><span class="sxs-lookup"><span data-stu-id="8949f-166">Apps known issues and workarounds</span></span>
+## <a name="access"></a>Access
 
-<span data-ttu-id="8949f-167">As aplicações de [software como serviço (SaaS)](https://azure.microsoft.com/overview/what-is-saas/) e Line of Business (LoB) dependem frequentemente das UPNs para encontrar informações sobre os utilizadores e armazenar informações sobre o perfil dos utilizadores, incluindo funções.</span><span class="sxs-lookup"><span data-stu-id="8949f-167">[Software as a service (SaaS)](https://azure.microsoft.com/overview/what-is-saas/) and Line of Business (LoB) applications often rely on UPNs to find users and store user profile information, including roles.</span></span> <span data-ttu-id="8949f-168">As aplicações que utilizam [o provisionamento Just in Time](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning) para criar um perfil de utilizador quando os utilizadores iniciarem sessão na aplicação pela primeira vez podem ser afetadas por alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-168">Applications that use [Just in Time provisioning](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning) to create a user profile when users sign in to the app for the first time can be affected by UPN changes.</span></span>
+Vzhledem k tomu, že je galerie sdílených imagí, definice obrázku a verze image, všechny prostředky, můžou se sdílet pomocí integrovaných nativních ovládacích prvků Azure RBAC. Pomocí RBAC můžete tyto prostředky sdílet ostatním uživatelům, instančním objektům a skupinám. Můžete dokonce sdílet přístup jednotlivcům mimo klienta, kterého vytvořili v rámci. Jakmile má uživatel přístup ke sdílené imagi verze, může nasadit virtuální počítač nebo sadu škálování virtuálního počítače.  Tady je tabulka sdílení, která pomáhá pochopit, k čemu uživatel přistupuje:
 
-<span data-ttu-id="8949f-169">**Edição conhecida**</span><span class="sxs-lookup"><span data-stu-id="8949f-169">**Known issue**</span></span><br>
-<span data-ttu-id="8949f-170">Alterar a UPN de um utilizador pode quebrar a relação entre o utilizador da AD Azure e o perfil de utilizador criado na aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-170">Changing a user's UPN could break the relationship between the Azure AD user and the user profile created on the application.</span></span> <span data-ttu-id="8949f-171">Se a aplicação utilizar [o provisionamento Just in Time,](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning)poderá criar um novo perfil de utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-171">If the application uses  [Just in Time provisioning](https://docs.microsoft.com/azure/active-directory/app-provisioning/user-provisioning), it might create a brand-new user profile.</span></span> <span data-ttu-id="8949f-172">Isto exigirá que o administrador de aplicação efaça alterações manuais para corrigir esta relação.</span><span class="sxs-lookup"><span data-stu-id="8949f-172">This will require the application administrator to make manual changes to fix this relationship.</span></span>
+| Sdíleno s uživatelem     | Sdílená galerie obrázků | Definice image | Verze image |
+|----------------------|----------------------|--------------|----------------------|
+| Sdílená galerie obrázků | Ano                  | Ano          | Ano                  |
+| Definice image     | Ne                   | Ano          | Ano                  |
 
-<span data-ttu-id="8949f-173">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-173">**Workaround**</span></span><br>
-<span data-ttu-id="8949f-174">O fornecimento automatizado de [utilizadores da Azure AD](https://docs.microsoft.com/azure/active-directory/manage-apps/user-provisioning) permite-lhe criar, manter e remover automaticamente as identidades dos seus utilizadores em aplicações em nuvem suportadas.</span><span class="sxs-lookup"><span data-stu-id="8949f-174">[Azure AD Automated User Provisioning](https://docs.microsoft.com/azure/active-directory/manage-apps/user-provisioning) lets you automatically create, maintain, and remove your user identities in supported cloud applications.</span></span> <span data-ttu-id="8949f-175">Configurar o fornecimento automatizado de utilizadores nas suas aplicações atualiza automaticamente as UPNs nas aplicações.</span><span class="sxs-lookup"><span data-stu-id="8949f-175">Configuring automated user provisioning on your applications automatically updates UPNs on the applications.</span></span> <span data-ttu-id="8949f-176">Teste as aplicações como parte do lançamento progressivo para validar que não são afetadas por alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-176">Test the applications as part of the progressive rollout to validate that they are not impacted by UPN changes.</span></span>
-<span data-ttu-id="8949f-177">Se for um desenvolvedor, considere [adicionar suporte SCIM à sua aplicação](https://docs.microsoft.com/azure/active-directory/app-provisioning/use-scim-to-provision-users-and-groups) para permitir o fornecimento automático de utilizadores a partir do Azure Ative Directory.</span><span class="sxs-lookup"><span data-stu-id="8949f-177">If you are a developer, consider [adding SCIM support to your application](https://docs.microsoft.com/azure/active-directory/app-provisioning/use-scim-to-provision-users-and-groups) to enable automatic user provisioning from Azure Active Directory.</span></span> 
+Pro nejlepší prostředí doporučujeme sdílení na úrovni galerie. Nedoporučujeme sdílet jednotlivé verze imagí. Další informace o RBAC najdete v tématu [Správa přístupu k prostředkům Azure pomocí RBAC](../articles/role-based-access-control/role-assignments-portal.md).
 
-## <a name="managed-devices-known-issues-and-workarounds"></a><span data-ttu-id="8949f-178">Dispositivos geridos conhecidos questões e sobras</span><span class="sxs-lookup"><span data-stu-id="8949f-178">Managed devices known issues and workarounds</span></span>
+Image je také možné sdílet, ve velkém měřítku, a to i v rámci klientů pomocí registrace aplikace s více klienty. Další informace o sdílení imagí napříč klienty najdete v tématu [sdílení imagí virtuálních počítačů galerie v rámci tenantů Azure](../articles/virtual-machines/linux/share-images-across-tenants.md).
 
-<span data-ttu-id="8949f-179">Ao [trazer os seus dispositivos para o Azure AD,](https://docs.microsoft.com/azure/active-directory/devices/overview)maximiza a produtividade dos seus utilizadores através de um único sinal (SSO) através da sua nuvem e recursos no local.</span><span class="sxs-lookup"><span data-stu-id="8949f-179">By [bringing your devices to Azure AD](https://docs.microsoft.com/azure/active-directory/devices/overview), you maximize your users' productivity through single sign-on (SSO) across your cloud and on-premises resources.</span></span>
+## <a name="billing"></a>Fakturace
+Za používání služby Galerie sdílených imagí se neúčtují žádné další poplatky. Budou se vám účtovat tyto prostředky:
+- Náklady na úložiště pro ukládání verzí sdílených imagí Náklady závisí na počtu replik verze image a na počtu oblastí, na které se má verze replikovat. Pokud máte například 2 bitové kopie a obě jsou replikovány do 3 oblastí, bude vám účtováno 6 spravovaných disků na základě jejich velikosti. Další informace najdete v tématu [Managed disks ceny](https://azure.microsoft.com/pricing/details/managed-disks/).
+- Poplatky za síťové přenosy za replikaci první verze image ze zdrojové oblasti do replikovaných oblastí. Další repliky se zpracovávají v rámci této oblasti, takže se neúčtují žádné další poplatky. 
 
-### <a name="azure-ad-joined-devices"></a><span data-ttu-id="8949f-180">Dispositivos associados ao Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-180">Azure AD joined devices</span></span>
+## <a name="updating-resources"></a>Aktualizace prostředků
 
-<span data-ttu-id="8949f-181">Os dispositivos aderes à [Azure AD](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join) juntam-se diretamente à Azure AD e permitem que os utilizadores inscrevam o dispositivo utilizando a identidade da sua organização.</span><span class="sxs-lookup"><span data-stu-id="8949f-181">[Azure AD joined](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join) devices are joined directly to Azure AD and allow users to sign in to the device using their organization's identity.</span></span>
+Po vytvoření můžete provést některé změny v prostředcích Galerie imagí. Jsou omezeny na:
+ 
+Galerie sdílených imagí:
+- Popis
 
-<span data-ttu-id="8949f-182">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-182">**Known issues**</span></span> <br>
-<span data-ttu-id="8949f-183">Os utilizadores podem experimentar problemas de inscrição simples com aplicações que dependem da AD Azure para autenticação.</span><span class="sxs-lookup"><span data-stu-id="8949f-183">Users may experience single sign-on issues with applications that depend on Azure AD for authentication.</span></span>
+Definice Image:
+- Doporučené vCPU
+- Doporučená paměť
+- Popis
+- Datum konce životnosti
 
-<span data-ttu-id="8949f-184">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-184">**Workaround**</span></span> <br>
-<span data-ttu-id="8949f-185">Dê tempo suficiente para que a alteração UPN sincronize com a AD Azure.</span><span class="sxs-lookup"><span data-stu-id="8949f-185">Allow enough time for the UPN change to sync to Azure AD.</span></span> <span data-ttu-id="8949f-186">Assim que verificar se a nova UPN está refletida no Portal Azure AD, peça ao utilizador que selecione o azulejo "Outro utilizador" para iniciar sessão com a sua nova UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-186">Once you verify that the new UPN is reflected on the Azure AD Portal, ask the user to select the "Other user" tile to sign in with their new UPN.</span></span> <span data-ttu-id="8949f-187">Também pode verificar através [da PowerShell](https://docs.microsoft.com/powershell/module/azuread/get-azureaduser?view=azureadps-2.0).</span><span class="sxs-lookup"><span data-stu-id="8949f-187">You can also verify through [PowerShell](https://docs.microsoft.com/powershell/module/azuread/get-azureaduser?view=azureadps-2.0).</span></span> <span data-ttu-id="8949f-188">Depois de iniciar sessão com a sua nova UPN, as referências à antiga UPN podem ainda aparecer na definição do Windows "Access work or school".</span><span class="sxs-lookup"><span data-stu-id="8949f-188">After signing in with their new UPN, references to the old UPN might still appear on the "Access work or school" Windows setting.</span></span>
+Verze Image:
+- Počet místních replik
+- Cílové oblasti
+- Vyloučit z posledního
+- Datum konce životnosti
 
-![Screenshot de domínios verificados](./media/howto-troubleshoot-upn-changes/other-user.png)
+## <a name="sdk-support"></a>Podpora SDK
 
-### <a name="hybrid-azure-ad-joined-devices"></a><span data-ttu-id="8949f-190">Dispositivos híbridos associados ao Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-190">Hybrid Azure AD joined devices</span></span>
+Následující sady SDK podporují vytváření galerií sdílených imagí:
 
-<span data-ttu-id="8949f-191">Os dispositivos aderes à [Hybrid Azure AD](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join-hybrid) juntam-se ao Ative Directory e ao Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-191">[Hybrid Azure AD joined](https://docs.microsoft.com/azure/active-directory/devices/concept-azure-ad-join-hybrid) devices are joined to Active Directory and Azure AD.</span></span> <span data-ttu-id="8949f-192">Pode implementar a adesão do Hybrid Azure AD se o seu ambiente tiver uma pegada de Diretório Ativo no local e também quiser beneficiar das capacidades fornecidas pela Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-192">You can implement Hybrid Azure AD join if your environment has an on-premises Active Directory footprint and you also want to benefit from the capabilities provided by Azure AD.</span></span>
+- [.NET](https://docs.microsoft.com/dotnet/api/overview/azure/virtualmachines/management?view=azure-dotnet)
+- [Java](https://docs.microsoft.com/java/azure/?view=azure-java-stable)
+- [Node.js](https://docs.microsoft.com/javascript/api/@azure/arm-compute)
+- [Python](https://docs.microsoft.com/python/api/overview/azure/virtualmachines?view=azure-python)
+- [Přejít](https://docs.microsoft.com/azure/go/)
 
-<span data-ttu-id="8949f-193">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-193">**Known issues**</span></span> 
+## <a name="templates"></a>Šablony
 
-<span data-ttu-id="8949f-194">Os dispositivos aderes ao Windows 10 Hybrid Azure AD são suscetíveis de sofrer reiniciações inesperadas e problemas de acesso.</span><span class="sxs-lookup"><span data-stu-id="8949f-194">Windows 10 Hybrid Azure AD joined devices are likely to experience unexpected restarts and access issues.</span></span>
+Prostředek Galerie sdílených imagí můžete vytvořit pomocí šablon. K dispozici je několik šablon rychlého startu Azure: 
 
-<span data-ttu-id="8949f-195">Se os utilizadores iniciarem sessão no Windows antes da nova UPN ter sido sincronizada com a AD Azure, ou continuarem a utilizar uma sessão windows existente, poderão experimentar problemas de acesso simples com aplicações que utilizam a AD Azure para autenticação se o Acesso Condicional tiver sido configurado para impor a utilização de dispositivos Híbridos Unidos para aceder a recursos.</span><span class="sxs-lookup"><span data-stu-id="8949f-195">If users sign in to Windows before the new UPN has been synchronized to Azure AD, or continue to use an existing Windows session, they may experience single sign-on issues with applications that use Azure AD for authentication if Conditional Access has been configured to enforce the use of Hybrid Joined devices to access resources.</span></span> 
+- [Vytvoření galerie sdílených imagí](https://azure.microsoft.com/resources/templates/101-sig-create/)
+- [Vytvoření definice obrázku v galerii sdílených imagí](https://azure.microsoft.com/resources/templates/101-sig-image-definition-create/)
+- [Vytvoření verze image v galerii sdílených imagí](https://azure.microsoft.com/resources/templates/101-sig-image-version-create/)
+- [Vytvoření virtuálního počítače z verze image](https://azure.microsoft.com/resources/templates/101-vm-from-sig/)
 
-<span data-ttu-id="8949f-196">Além disso, aparecerá a seguinte mensagem, forçando um reinício após um minuto.</span><span class="sxs-lookup"><span data-stu-id="8949f-196">Additionally, the following message will appear, forcing a restart after one minute.</span></span> 
+## <a name="frequently-asked-questions"></a>Nejčastější dotazy 
 
-<span data-ttu-id="8949f-197">"O seu PC recomeçará automaticamente num minuto.</span><span class="sxs-lookup"><span data-stu-id="8949f-197">"Your PC will automatically restart in one minute.</span></span> <span data-ttu-id="8949f-198">O Windows teve um problema e precisa de ser reiniciado.</span><span class="sxs-lookup"><span data-stu-id="8949f-198">Windows ran into a problem and needs to restart.</span></span> <span data-ttu-id="8949f-199">Deve fechar esta mensagem agora e salvar o seu trabalho".</span><span class="sxs-lookup"><span data-stu-id="8949f-199">You should close this message now and save your work".</span></span>
+* [Jak můžu zobrazit seznam všech prostředků Galerie sdílených imagí v rámci předplatných?](#how-can-i-list-all-the-shared-image-gallery-resources-across-subscriptions) 
+* [Můžu existující image přesunout do galerie sdílených imagí?](#can-i-move-my-existing-image-to-the-shared-image-gallery)
+* [Můžu vytvořit verzi image z specializovaného disku?](#can-i-create-an-image-version-from-a-specialized-disk)
+* [Můžu po vytvoření přesunout prostředek Galerie sdílených imagí do jiného předplatného?](#can-i-move-the-shared-image-gallery-resource-to-a-different-subscription-after-it-has-been-created)
+* [Můžu replikovat verze imagí napříč cloudy, jako je Azure Čína 21Vianet nebo Azure Německo nebo cloud Azure Government?](#can-i-replicate-my-image-versions-across-clouds-such-as-azure-china-21vianet-or-azure-germany-or-azure-government-cloud)
+* [Můžu replikovat verze imagí v rámci předplatných?](#can-i-replicate-my-image-versions-across-subscriptions)
+* [Můžu sdílet verze imagí napříč klienty Azure AD?](#can-i-share-image-versions-across-azure-ad-tenants)
+* [Jak dlouho trvá replikace verzí imagí napříč cílovými oblastmi?](#how-long-does-it-take-to-replicate-image-versions-across-the-target-regions)
+* [Jaký je rozdíl mezi zdrojovou a cílovou oblastí?](#what-is-the-difference-between-source-region-and-target-region)
+* [Návody určit zdrojovou oblast při vytváření verze image?](#how-do-i-specify-the-source-region-while-creating-the-image-version)
+* [Návody zadejte počet replik verzí imagí, které se mají v každé oblasti vytvořit?](#how-do-i-specify-the-number-of-image-version-replicas-to-be-created-in-each-region)
+* [Je možné galerii sdílených imagí vytvořit v jiném umístění než u definice image a verze image?](#can-i-create-the-shared-image-gallery-in-a-different-location-than-the-one-for-the-image-definition-and-image-version)
+* [Jaké jsou poplatky za používání Galerie sdílených imagí?](#what-are-the-charges-for-using-the-shared-image-gallery)
+* [Jakou verzi rozhraní API mám použít k vytvoření sdílené image a její definice a verze image?](#what-api-version-should-i-use-to-create-shared-image-gallery-and-image-definition-and-image-version)
+* [Jakou verzi rozhraní API mám použít k vytvoření sdíleného virtuálního počítače nebo sady škálování virtuálního počítače z verze image?](#what-api-version-should-i-use-to-create-shared-vm-or-virtual-machine-scale-set-out-of-the-image-version)
 
-<span data-ttu-id="8949f-200">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-200">**Workaround**</span></span> 
+### <a name="how-can-i-list-all-the-shared-image-gallery-resources-across-subscriptions"></a>Jak můžu zobrazit seznam všech prostředků Galerie sdílených imagí v rámci předplatných?
 
-<span data-ttu-id="8949f-201">O aparelho deve ser desacompanhado da AD Azure e reiniciado.</span><span class="sxs-lookup"><span data-stu-id="8949f-201">The device must be unjoined from Azure AD and restarted.</span></span> <span data-ttu-id="8949f-202">Após o reinício, o dispositivo voltará a juntar-se automaticamente ao Azure AD e o utilizador deve iniciar o seu contrato com a nova UPN, selecionando o azulejo "Outro utilizador".</span><span class="sxs-lookup"><span data-stu-id="8949f-202">After restart, the device will automatically join Azure AD again and the user must sign in using the new UPN by selecting the "Other user" tile.</span></span> <span data-ttu-id="8949f-203">Para desjuntar um dispositivo da Azure AD, execute o seguinte comando num pedido de comando:</span><span class="sxs-lookup"><span data-stu-id="8949f-203">To unjoin a device from Azure AD, run the following command at a command prompt:</span></span>
+Pokud chcete zobrazit seznam všech prostředků Galerie sdílených imagí v rámci předplatných, ke kterým máte přístup v Azure Portal, postupujte podle následujících kroků:
 
-<span data-ttu-id="8949f-204">**dsregcmd /leave**</span><span class="sxs-lookup"><span data-stu-id="8949f-204">**dsregcmd /leave**</span></span>
+1. Otevřete [Azure Portal](https://portal.azure.com).
+1. Přejít na **všechny prostředky**.
+1. Vyberte všechna předplatná, pod kterými chcete zobrazit seznam všech prostředků.
+1. Vyhledejte prostředky typu **privátní Galerie**.
+ 
+   Chcete-li zobrazit definice obrázků a verze imagí, měli byste také vybrat možnost **Zobrazit skryté typy**.
+ 
+   Pokud chcete zobrazit seznam všech prostředků Galerie sdílených imagí v rámci předplatných, ke kterým máte oprávnění, použijte následující příkaz v rozhraní příkazového řádku Azure CLI:
 
-<span data-ttu-id="8949f-205">O utilizador terá de [se reinscrever](https://docs.microsoft.com/windows/security/identity-protection/hello-for-business/hello-hybrid-cert-whfb-provision) para o Windows Hello for Business se estiver a ser utilizado.</span><span class="sxs-lookup"><span data-stu-id="8949f-205">The user will need to [re-enroll](https://docs.microsoft.com/windows/security/identity-protection/hello-for-business/hello-hybrid-cert-whfb-provision) for Windows Hello for Business if it's being used.</span></span> <span data-ttu-id="8949f-206">Os dispositivos Windows 7 e 8.1 não são afetados por este problema após alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-206">Windows 7 and 8.1 devices are not affected by this issue after UPN changes.</span></span>
+   ```azurecli
+   az account list -otsv --query "[].id" | xargs -n 1 az sig list --subscription
+   ```
 
-## <a name="microsoft-authenticator-known-issues-and-workarounds"></a><span data-ttu-id="8949f-207">Microsoft Autenticador conhecido seleções e seleções</span><span class="sxs-lookup"><span data-stu-id="8949f-207">Microsoft Authenticator known issues and workarounds</span></span>
+### <a name="can-i-move-my-existing-image-to-the-shared-image-gallery"></a>Můžu existující image přesunout do galerie sdílených imagí?
+ 
+Ano. Existují tři scénáře založené na typech imagí, které máte pravděpodobně k dispozici.
 
-<span data-ttu-id="8949f-208">A sua organização poderá exigir a utilização da [aplicação Microsoft Authenticator](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) para iniciar sessão e aceder a aplicações e dados organizacionais.</span><span class="sxs-lookup"><span data-stu-id="8949f-208">Your organization might require the use of the [Microsoft Authenticator app](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) to sign in and access organizational applications and data.</span></span> <span data-ttu-id="8949f-209">Embora possa aparecer um nome de utilizador na aplicação, a conta não está configurada para funcionar como um método de verificação até que o utilizador complete o processo de registo.</span><span class="sxs-lookup"><span data-stu-id="8949f-209">Although a username might appear in the app, the account isn't set up to function as a verification method until the user completes the registration process.</span></span>
+ Scénář 1: Pokud máte spravovanou image ve stejném předplatném jako váš podpis, můžete z ní vytvořit definici image a image.
 
-<span data-ttu-id="8949f-210">A [aplicação Microsoft Authenticator](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) tem quatro funções principais:</span><span class="sxs-lookup"><span data-stu-id="8949f-210">The [Microsoft Authenticator app](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-overview) has four main functions:</span></span>
+ Scénář 2: Pokud máte nespravovanou bitovou kopii ve stejném předplatném jako váš SIG, můžete z ní vytvořit spravovanou image a pak z ní vytvořit definici image a image. 
 
-* <span data-ttu-id="8949f-211">Autenticação de vários fatores através de um código de notificação ou verificação push</span><span class="sxs-lookup"><span data-stu-id="8949f-211">Multi-factor authentication via a push notification or verification code</span></span>
+ Scénář 3: Pokud máte v místním systému souborů virtuální pevný disk, budete muset virtuální pevný disk nahrát do spravované image a pak z něj můžete vytvořit definici image a verzi image.
 
-* <span data-ttu-id="8949f-212">Atuar como corretor de autenticação em dispositivos iOS e Android para fornecer um único sinal para aplicações que utilizem [autenticação intermediada](https://docs.microsoft.com/azure/active-directory/develop/brokered-auth)</span><span class="sxs-lookup"><span data-stu-id="8949f-212">Act as an Authentication Broker on iOS and Android devices to provide single sign-on for applications that use [Brokered authentication](https://docs.microsoft.com/azure/active-directory/develop/brokered-auth)</span></span>
+- Pokud virtuální pevný disk má virtuální počítač s Windows, přečtěte si téma [nahrání virtuálního pevného disku](https://docs.microsoft.com/azure/virtual-machines/windows/upload-generalized-managed).
+- Pokud je virtuální pevný disk pro virtuální počítač se systémem Linux, přečtěte si téma [nahrání VHD](https://docs.microsoft.com/azure/virtual-machines/linux/upload-vhd#option-1-upload-a-vhd)
 
-* <span data-ttu-id="8949f-213">Registo de dispositivos (também conhecido como Workplace Join) para AD Azure, que é um requisito para outras funcionalidades como Intune App Protection e Device Registration/Management,</span><span class="sxs-lookup"><span data-stu-id="8949f-213">Device registration (also known as Workplace Join) to Azure AD, which is a requirement for other features like Intune App Protection and Device Enrolment/Management,</span></span>
+### <a name="can-i-create-an-image-version-from-a-specialized-disk"></a>Můžu vytvořit verzi image z specializovaného disku?
 
-* <span data-ttu-id="8949f-214">Registo telefónico, que requer MFA e registo do dispositivo.</span><span class="sxs-lookup"><span data-stu-id="8949f-214">Phone sign in, which requires MFA and device registration.</span></span>
+Ano, podpora specializovaných disků jako imagí je ve verzi Preview. Virtuální počítač můžete vytvořit jenom z specializované Image pomocí portálu ([Windows](../articles/virtual-machines/linux/shared-images-portal.md) nebo [Linux](../articles/virtual-machines/linux/shared-images-portal.md)) a rozhraní API. Pro verzi Preview neexistuje žádná podpora prostředí PowerShell.
 
-### <a name="multi-factor-authentication-with-android-devices"></a><span data-ttu-id="8949f-215">Autenticação multi-factor com dispositivos Android</span><span class="sxs-lookup"><span data-stu-id="8949f-215">Multi-Factor Authentication with Android devices</span></span>
+### <a name="can-i-move-the-shared-image-gallery-resource-to-a-different-subscription-after-it-has-been-created"></a>Můžu po vytvoření přesunout prostředek Galerie sdílených imagí do jiného předplatného?
 
-<span data-ttu-id="8949f-216">A aplicação Microsoft Authenticator oferece uma opção de verificação fora da banda.</span><span class="sxs-lookup"><span data-stu-id="8949f-216">The Microsoft Authenticator app offers an out-of-band verification option.</span></span> <span data-ttu-id="8949f-217">Em vez de colocar uma chamada telefónica ou SMS automatizada ao utilizador durante o check-in, a [Autenticação Multi-Factor (MFA)](https://docs.microsoft.com/azure/active-directory/authentication/concept-mfa-howitworks) empurra uma notificação para a aplicação Microsoft Authenticator no smartphone ou tablet do utilizador.</span><span class="sxs-lookup"><span data-stu-id="8949f-217">Instead of placing an automated phone call or SMS to the user during sign-in, [Multi-Factor Authentication (MFA)](https://docs.microsoft.com/azure/active-directory/authentication/concept-mfa-howitworks) pushes a notification to the Microsoft Authenticator app on the user's smartphone or tablet.</span></span> <span data-ttu-id="8949f-218">O utilizador simplesmente toca Em 'Approve' (ou introduz um PIN ou biométrico e toca em "Authenticate") na aplicação para completar o seu início de sessão.</span><span class="sxs-lookup"><span data-stu-id="8949f-218">The user simply taps Approve (or enters a PIN or biometric and taps "Authenticate") in the app to complete their sign-in.</span></span>
+Ne, prostředek Galerie sdílených imagí nemůžete přesunout do jiného předplatného. Verze image v galerii ale budete moct replikovat do jiných oblastí podle potřeby.
 
-<span data-ttu-id="8949f-219">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-219">**Known issues**</span></span> 
+### <a name="can-i-replicate-my-image-versions-across-clouds-such-as-azure-china-21vianet-or-azure-germany-or-azure-government-cloud"></a>Můžu replikovat verze imagí napříč cloudy, jako je Azure Čína 21Vianet nebo Azure Německo nebo cloud Azure Government?
 
-<span data-ttu-id="8949f-220">Quando altera a UPN de um utilizador, a antiga UPN ainda apresenta na conta de utilizador e pode não ser recebida uma notificação.</span><span class="sxs-lookup"><span data-stu-id="8949f-220">When you change a user's UPN, the old UPN still displays on the user account and a notification might not be received.</span></span> <span data-ttu-id="8949f-221">[Os códigos](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-faq) de verificação continuam a funcionar.</span><span class="sxs-lookup"><span data-stu-id="8949f-221">[Verification codes](https://docs.microsoft.com/azure/active-directory/user-help/user-help-auth-app-faq) continue to work.</span></span>
+Ne, verze imagí nelze replikovat napříč cloudy.
 
-<span data-ttu-id="8949f-222">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-222">**Workaround**</span></span>
+### <a name="can-i-replicate-my-image-versions-across-subscriptions"></a>Můžu replikovat verze imagí v rámci předplatných?
 
-<span data-ttu-id="8949f-223">Se for recebida uma notificação, instrua o utilizador a rejeitar a notificação, abra a aplicação Autenticadora, toque na opção "Verificar notificações" e aprove o pedido de MFA.</span><span class="sxs-lookup"><span data-stu-id="8949f-223">If a notification is received, instruct the user to dismiss the notification, open the Authenticator app, tap the "Check for notifications" option and approve the MFA prompt.</span></span> <span data-ttu-id="8949f-224">Depois disso, a UPN exibida na conta será atualizada.</span><span class="sxs-lookup"><span data-stu-id="8949f-224">After this, the UPN displayed on the account will be updated.</span></span> <span data-ttu-id="8949f-225">Note que a UPN atualizada pode ser apresentada como uma nova conta, isto deve-se à aplicação de outras funcionalidades do Autenticador.</span><span class="sxs-lookup"><span data-stu-id="8949f-225">Note the updated UPN might be displayed as a new account, this is due to other Authenticator functionality being used.</span></span> <span data-ttu-id="8949f-226">Para mais informações consulte as questões adicionais conhecidas neste artigo.</span><span class="sxs-lookup"><span data-stu-id="8949f-226">For more information refer to the additional known issues in this article.</span></span>
+Ne, v rámci předplatného můžete replikovat verze imagí do různých oblastí a použít je v jiných předplatných prostřednictvím RBAC.
 
-### <a name="brokered-authentication"></a><span data-ttu-id="8949f-227">Autenticação intermediada</span><span class="sxs-lookup"><span data-stu-id="8949f-227">Brokered authentication</span></span>
+### <a name="can-i-share-image-versions-across-azure-ad-tenants"></a>Můžu sdílet verze imagí napříč klienty Azure AD? 
 
-<span data-ttu-id="8949f-228">Em corretores Android e iOS como o Microsoft Authenticator permitem:</span><span class="sxs-lookup"><span data-stu-id="8949f-228">On Android and iOS brokers like Microsoft Authenticator enable:</span></span>
+Ano, můžete použít RBAC ke sdílení jednotlivců napříč klienty. Pokud ale chcete sdílet se škálováním, přečtěte si téma "sdílení imagí Galerie mezi klienty Azure" pomocí [PowerShellu](../articles/virtual-machines/windows/share-images-across-tenants.md) nebo rozhraní příkazového [řádku](../articles/virtual-machines/linux/share-images-across-tenants.md).
 
-* <span data-ttu-id="8949f-229">Inscrição única (SSO) - Os seus utilizadores não precisarão de iniciar sessão em cada aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-229">Single sign-on (SSO) - Your users won't need to sign in to each application.</span></span>
+### <a name="how-long-does-it-take-to-replicate-image-versions-across-the-target-regions"></a>Jak dlouho trvá replikace verzí imagí napříč cílovými oblastmi?
 
-* <span data-ttu-id="8949f-230">Identificação do dispositivo - O corretor acede ao certificado do dispositivo criado no dispositivo quando foi aderido no local de trabalho.</span><span class="sxs-lookup"><span data-stu-id="8949f-230">Device identification - The broker accesses the device certificate created on the device when it was workplace joined.</span></span>
+Doba replikace verze Image je zcela závislá na velikosti bitové kopie a počtu oblastí, na které se replikuje. Osvědčeným postupem je však doporučit, abyste zachovali obrázek malými a zdrojové a cílové oblasti byly blízko nejlepších výsledků. Stav replikace můžete zjistit pomocí příznaku-ReplicationStatus.
 
-* <span data-ttu-id="8949f-231">Verificação de identificação de aplicações - Quando uma aplicação chama o corretor, passa o url de redirecionamento, e o corretor verifica-o.</span><span class="sxs-lookup"><span data-stu-id="8949f-231">Application identification verification - When an application calls the broker, it passes its redirect URL, and the broker verifies it.</span></span>
+### <a name="what-is-the-difference-between-source-region-and-target-region"></a>Jaký je rozdíl mezi zdrojovou a cílovou oblastí?
 
-<span data-ttu-id="8949f-232">Além disso, permite que as aplicações participem em funcionalidades mais avançadas, como o [Acesso Condicional,](https://docs.microsoft.com/azure/active-directory/conditional-access/)e suporta [cenários Microsoft Intune](https://docs.microsoft.com/azure/active-directory/develop/msal-net-use-brokers-with-xamarin-apps).</span><span class="sxs-lookup"><span data-stu-id="8949f-232">Additionally, it allows applications to participate in more advanced features such as [Conditional Access](https://docs.microsoft.com/azure/active-directory/conditional-access/), and supports [Microsoft Intune scenarios](https://docs.microsoft.com/azure/active-directory/develop/msal-net-use-brokers-with-xamarin-apps).</span></span>
+Zdrojová oblast je oblast, ve které se vytvoří vaše verze image, a cílové oblasti jsou oblasti, ve kterých se uloží kopie verze image. Pro každou verzi image můžete mít jenom jednu zdrojovou oblast. Také se ujistěte, že při vytváření verze image předáte umístění zdrojové oblasti jako jednu z cílových oblastí.
 
-<span data-ttu-id="8949f-233">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-233">**Known issues**</span></span><br>
-<span data-ttu-id="8949f-234">O utilizador é apresentado com solicitações de autenticação mais interativas em novas aplicações que utilizam o sessão assistido pelo corretor devido a uma incompatibilidade entre o login_hint passado pela aplicação e a UPN armazenada no corretor.</span><span class="sxs-lookup"><span data-stu-id="8949f-234">User is presented with more interactive authentication prompts on new applications that use broker-assisted sign-in due to a mismatch between the login_hint passed by the application and the UPN stored on the broker.</span></span>
+### <a name="how-do-i-specify-the-source-region-while-creating-the-image-version"></a>Návody určit zdrojovou oblast při vytváření verze image?
 
-<span data-ttu-id="8949f-235">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-235">**Workaround**</span></span> <br> <span data-ttu-id="8949f-236">O utilizador precisa de remover manualmente a conta do Microsoft Authenticator e iniciar um novo início de sessão a partir de uma aplicação assistida por corretor.</span><span class="sxs-lookup"><span data-stu-id="8949f-236">The user needs to manually remove the account from Microsoft Authenticator and start a new sign-in from a broker-assisted application.</span></span> <span data-ttu-id="8949f-237">A conta será adicionada automaticamente após a autenticação inicial.</span><span class="sxs-lookup"><span data-stu-id="8949f-237">The account will be automatically added after the initial authentication.</span></span>
+Při vytváření verze image můžete použít značku **--Location** v rozhraní příkazového řádku a značku **-Location** v PowerShellu k určení zdrojové oblasti. Ujistěte se prosím, že spravovaná bitová kopie, kterou používáte jako základní image pro vytvoření verze image, je ve stejném umístění jako umístění, ve kterém chcete vytvořit verzi image. Také se ujistěte, že při vytváření verze image předáte umístění zdrojové oblasti jako jednu z cílových oblastí.  
 
-### <a name="device-registration"></a><span data-ttu-id="8949f-238">Registo de dispositivo</span><span class="sxs-lookup"><span data-stu-id="8949f-238">Device registration</span></span>
+### <a name="how-do-i-specify-the-number-of-image-version-replicas-to-be-created-in-each-region"></a>Návody zadejte počet replik verzí imagí, které se mají v každé oblasti vytvořit?
 
-<span data-ttu-id="8949f-239">A aplicação Microsoft Authenticator é responsável pelo registo do dispositivo na Azure AD.</span><span class="sxs-lookup"><span data-stu-id="8949f-239">The Microsoft Authenticator app is responsible for registering the device to Azure AD.</span></span> <span data-ttu-id="8949f-240">O registo do dispositivo permite que o dispositivo autentime à AD Azure e é um requisito para os seguintes cenários:</span><span class="sxs-lookup"><span data-stu-id="8949f-240">Device registration allows the device to authenticate to Azure AD and is a requirement for the following scenarios:</span></span>
+Existují dva způsoby, jak můžete zadat počet replik verze image, které se mají vytvořit v každé oblasti:
+ 
+1. Počet místních replik, které určují počet replik, které chcete vytvořit pro jednotlivé oblasti. 
+2. Běžný počet replik, který je výchozí hodnotou podle počtu oblastí v případě, že počet místních replik není zadaný. 
 
-* <span data-ttu-id="8949f-241">Intune App Protection</span><span class="sxs-lookup"><span data-stu-id="8949f-241">Intune App Protection</span></span>
+Chcete-li určit počet místních replik, předejte umístění spolu s počtem replik, které chcete v této oblasti vytvořit: "Střed USA – jih = 2". 
 
-* <span data-ttu-id="8949f-242">Inscrição de Dispositivo Intune</span><span class="sxs-lookup"><span data-stu-id="8949f-242">Intune Device Enrollment</span></span>
+Pokud se pro každé umístění nezadá počet místních replik, bude výchozí počet replik stejný jako společný počet replik, který jste zadali. 
 
-* <span data-ttu-id="8949f-243">Sinal de telefone dentro</span><span class="sxs-lookup"><span data-stu-id="8949f-243">Phone Sign In</span></span>
+Pokud chcete v rozhraní `az sig image-version create` příkazového řádku určit společný počet replik, použijte v příkazu argument **--Replica-Count** .
 
-<span data-ttu-id="8949f-244">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-244">**Known issues**</span></span><br>
-<span data-ttu-id="8949f-245">Quando muda a UPN, uma nova conta com a nova UPN aparece listada na aplicação Microsoft Authenticator, enquanto a conta com a antiga UPN ainda está listada.</span><span class="sxs-lookup"><span data-stu-id="8949f-245">When you change the UPN, a new account with the new UPN appears listed on the Microsoft Authenticator app, while the account with the old UPN is still listed.</span></span> <span data-ttu-id="8949f-246">Além disso, os antigos ecrãs UPN na secção registo do dispositivo nas definições da aplicação.</span><span class="sxs-lookup"><span data-stu-id="8949f-246">Additionally, the old UPN displays on the Device Registration section on the app settings.</span></span> <span data-ttu-id="8949f-247">Não existe qualquer alteração na funcionalidade normal do Registo do Dispositivo ou nos cenários dependentes.</span><span class="sxs-lookup"><span data-stu-id="8949f-247">There is no change in the normal functionality of Device Registration or the dependant scenarios.</span></span>
+### <a name="can-i-create-the-shared-image-gallery-in-a-different-location-than-the-one-for-the-image-definition-and-image-version"></a>Je možné galerii sdílených imagí vytvořit v jiném umístění než u definice image a verze image?
 
-<span data-ttu-id="8949f-248">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-248">**Workaround**</span></span> <br> <span data-ttu-id="8949f-249">Para remover todas as referências à antiga UPN na aplicação Microsoft Authenticator, instrua o utilizador a remover manualmente as contas antigas e novas do Microsoft Authenticator, voltar a registar-se para o MFA e voltar a juntar-se ao dispositivo.</span><span class="sxs-lookup"><span data-stu-id="8949f-249">To remove all references to the old UPN on the Microsoft Authenticator app, instruct the user to manually remove both the old and new accounts from Microsoft Authenticator, re-register for MFA and rejoin the device.</span></span>
+Ano, je to možné. Jako osvědčený postup doporučujeme, abyste zachovali skupinu prostředků, galerii sdílených imagí, definici image a verzi image ve stejném umístění.
 
-### <a name="phone-sign-in"></a><span data-ttu-id="8949f-250">Registo telefónico</span><span class="sxs-lookup"><span data-stu-id="8949f-250">Phone sign-in</span></span>
+### <a name="what-are-the-charges-for-using-the-shared-image-gallery"></a>Jaké jsou poplatky za používání Galerie sdílených imagí?
 
-<span data-ttu-id="8949f-251">O registo telefónico permite que os utilizadores acedam ao Azure AD sem senha.</span><span class="sxs-lookup"><span data-stu-id="8949f-251">Phone sign-in allows users to sign in to Azure AD without a password.</span></span> <span data-ttu-id="8949f-252">Para ativar o registo do telefone, o utilizador tem de se registar para o MFA utilizando a aplicação Authenticator e, em seguida, ativar o registo do telefone diretamente no Autenticador.</span><span class="sxs-lookup"><span data-stu-id="8949f-252">To enable phone sign-in, the user needs to register for MFA using the Authenticator app and then enable phone sign-in directly on Authenticator.</span></span> <span data-ttu-id="8949f-253">Como parte da configuração, o dispositivo regista-se com a AD Azure.</span><span class="sxs-lookup"><span data-stu-id="8949f-253">As part of the configuration, the device registers with Azure AD.</span></span>
+Za použití služby Galerie sdílených imagí se neúčtují žádné poplatky, s výjimkou poplatků za úložiště pro ukládání verzí imagí a poplatků za síťové přenosy pro replikaci verzí imagí ze zdrojové oblasti do cílových oblastí.
 
-<span data-ttu-id="8949f-254">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-254">**Known issues**</span></span> <br>
-<span data-ttu-id="8949f-255">Os utilizadores não podem utilizar o registo telefónico porque não recebem qualquer notificação.</span><span class="sxs-lookup"><span data-stu-id="8949f-255">Users are not able to use Phone sign-in because they do not receive any notification.</span></span> <span data-ttu-id="8949f-256">Se o utilizador tocar no Check for Notifications, obtém um erro.</span><span class="sxs-lookup"><span data-stu-id="8949f-256">If the user taps on Check for Notifications, they get an error.</span></span>
+### <a name="what-api-version-should-i-use-to-create-shared-image-gallery-and-image-definition-and-image-version"></a>Jakou verzi rozhraní API mám použít k vytvoření sdílené image a její definice a verze image?
 
-<span data-ttu-id="8949f-257">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-257">**Workaround**</span></span><br>
-<span data-ttu-id="8949f-258">O utilizador tem de selecionar o menu de entrega na conta ativada para o registo do telefone e selecionar desativar o registo do telefone.</span><span class="sxs-lookup"><span data-stu-id="8949f-258">The user needs to select the drop-down menu on the account enabled for Phone sign-in and select Disable phone sign-in.</span></span> <span data-ttu-id="8949f-259">Se desejar, o registo do telefone pode ser ativado novamente.</span><span class="sxs-lookup"><span data-stu-id="8949f-259">If desired, Phone sign-in can be enabled again.</span></span>
+Pro práci s galeriemi sdílených imagí, definicemi obrázků a verzemi imagí doporučujeme použít rozhraní API verze 2018-06-01. Redundantní úložiště zóny (ZRS) vyžaduje verzi 2019-03-01 nebo novější.
 
-## <a name="security-key-fido2-known-issues-and-workarounds"></a><span data-ttu-id="8949f-260">Chave de Segurança (FIDO2) questões conhecidas e salões</span><span class="sxs-lookup"><span data-stu-id="8949f-260">Security Key (FIDO2) known issues and workarounds</span></span>
+### <a name="what-api-version-should-i-use-to-create-shared-vm-or-virtual-machine-scale-set-out-of-the-image-version"></a>Jakou verzi rozhraní API mám použít k vytvoření sdíleného virtuálního počítače nebo sady škálování virtuálního počítače z verze image?
 
-<span data-ttu-id="8949f-261">**Problemas conhecidos**</span><span class="sxs-lookup"><span data-stu-id="8949f-261">**Known issues**</span></span> <br>
-<span data-ttu-id="8949f-262">Quando vários utilizadores estão registados na mesma tecla, o sinal no ecrã mostra uma página de seleção de conta onde a antiga UPN é exibida.</span><span class="sxs-lookup"><span data-stu-id="8949f-262">When multiple users are registered on the same key, the sign in screen shows an account selection page where the old UPN is displayed.</span></span> <span data-ttu-id="8949f-263">As inscrições utilizando as Teclas de Segurança não são afetadas pelas alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-263">Sign ins using Security Keys are not affected by UPN changes.</span></span>  
-
-<span data-ttu-id="8949f-264">**Supor**</span><span class="sxs-lookup"><span data-stu-id="8949f-264">**Workaround**</span></span><br>
-<span data-ttu-id="8949f-265">Para remover referências às nsupções antigas, os utilizadores devem redefinir a chave de [segurança e reregistar.](https://docs.microsoft.com/azure/active-directory/authentication/howto-authentication-passwordless-security-key#known-issues)</span><span class="sxs-lookup"><span data-stu-id="8949f-265">To remove references to old UPNs, users must [reset the security key and re-register](https://docs.microsoft.com/azure/active-directory/authentication/howto-authentication-passwordless-security-key#known-issues).</span></span>
-
-## <a name="onedrive-known-issues-and-workarounds"></a><span data-ttu-id="8949f-266">OneDrive conheceu questões e salões</span><span class="sxs-lookup"><span data-stu-id="8949f-266">OneDrive known issues and workarounds</span></span>
-
-<span data-ttu-id="8949f-267">Os utilizadores do OneDrive são conhecidos por experimentarem problemas após as alterações da UPN.</span><span class="sxs-lookup"><span data-stu-id="8949f-267">OneDrive users are known to experience issues after UPN changes.</span></span> <span data-ttu-id="8949f-268">Para obter mais informações, veja como as [alterações da UPN afetam as funcionalidades do URL oneDrive e do OneDrive](https://docs.microsoft.com/onedrive/upn-changes).</span><span class="sxs-lookup"><span data-stu-id="8949f-268">For more information, see [How UPN changes affect the OneDrive URL and OneDrive features](https://docs.microsoft.com/onedrive/upn-changes).</span></span>
-
-## <a name="next-steps"></a><span data-ttu-id="8949f-269">Passos seguintes</span><span class="sxs-lookup"><span data-stu-id="8949f-269">Next steps</span></span>
-
-<span data-ttu-id="8949f-270">Consulte estes recursos:</span><span class="sxs-lookup"><span data-stu-id="8949f-270">See these resources:</span></span>
-* [<span data-ttu-id="8949f-271">Azure AD Connect: Conceitos de design</span><span class="sxs-lookup"><span data-stu-id="8949f-271">Azure AD Connect: Design concepts</span></span>](https://docs.microsoft.com/azure/active-directory/hybrid/plan-connect-design-concepts)
-
-* [<span data-ttu-id="8949f-272">População UserPrincipalName do Azure AD</span><span class="sxs-lookup"><span data-stu-id="8949f-272">Azure AD UserPrincipalName population</span></span>](https://docs.microsoft.com/azure/active-directory/hybrid/plan-connect-userprincipalname)
-
-* [<span data-ttu-id="8949f-273">Fichas de ID da plataforma de identidade da Microsoft</span><span class="sxs-lookup"><span data-stu-id="8949f-273">Microsoft identity platform ID tokens</span></span>](https://docs.microsoft.com/azure/active-directory/develop/id-tokens)
+Pro nasazení virtuálních počítačů a virtuálních počítačů pomocí verze image doporučujeme použít rozhraní API verze 2018-04-01 nebo vyšší.
