@@ -88,7 +88,7 @@ Specializované virtuální počítače neprošly procesem odebrání informací
 
 ## <a name="regional-support"></a>Místní podpora
 
-Zdrojové oblasti jsou uvedené v následující tabulce. Všechny veřejné oblasti můžou být cílové oblasti, ale pokud je chcete replikovat do Austrálie Central a Austrálie – střed 2, musíte mít své předplatné na seznamu povolených. Pokud chcete požádat o seznam povolených, navštivte:https://azure.microsoft.com/global-infrastructure/australia/contact/
+Zdrojové oblasti jsou uvedené v následující tabulce. Všechny veřejné oblasti můžou být cílové oblasti, ale pokud je chcete replikovat do Austrálie Central a Austrálie – střed 2, musíte mít své předplatné na seznamu povolených. Pokud chcete požádat o seznam povolených, navštivte: https://azure.microsoft.com/global-infrastructure/australia/contact/
 
 
 | Zdrojové oblasti        |                   |                    |                    |
