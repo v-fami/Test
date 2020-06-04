@@ -73,7 +73,7 @@ git commit -m "adding Gatsby project"
 
 1. Lépjen a GitHubra és jelentkezzen be. Az aktuális URL-cím a következőhöz hasonló: `https://github.com/<your username>?tab=repositories`
 
-2. Kattintson az `new` gombra, ahogyan az alábbi ábrán látható: :::image type="content" source="../media/create-github-repo.png" alt-text=\"Új GitHub-adattár létrehozása\":::
+2. Kattintson az `new` gombra, ahogyan az alábbi ábrán látható: :::image type="content" source="../media/create-github-repo.png" alt-text= Új GitHub-adattár létrehozása:::
 
 3. Adja meg az adattárhoz a `gatsby-app` nevet, és kattintson az `Create repository` gombra az ábra szerint: :::image type="content" source="../media/github-naming.png" alt-text="GitHub-adattár elnevezése":::
 
