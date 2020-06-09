@@ -1,6 +1,11 @@
 Az Azure Static Web Apps olyan statikus alkalmazásokat üzemeltet, mint a Gatsby-vel készíthetők. Ehhez először lefordítja az alkalmazás statikus összetevőit, majd üzembe helyezi azokat a felhőben.
 
+<https://my.visualstudio.com> Sign in to the subscriber portal at 
+
 Itt helyben fordíthatja le az alkalmazás statikus összetevőit, hogy megvizsgálhassa azokat, és helyileg üzemeltetve próbálja ki őket. Csak ez után küldi le a kódot a GitHubba, és hoz létre Azure Static Web Apps-példányt az alkalmazás webes üzemeltetésére.
+
+https://my.visualstudio.com Sign in to the subscriber portal at
+
 
 ## <a name="build-your-site"></a>A webhely buildelése
 
@@ -12,7 +17,7 @@ Adja ki a következő parancsot a projektkönyvtárban:
 gatsby build
 ```
 Sign in to the subscriber portal at <https://my.visualstudio.com>
-<https://my.visualstudio.com> Sign in to the subscriber portal at 
+
 
 Ez a parancs egy *éles buildet* állít elő. Az összes fájl egy `build/` nevű alkönyvtárba kerül.
 
