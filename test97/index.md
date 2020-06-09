@@ -11,6 +11,8 @@ Adja ki a következő parancsot a projektkönyvtárban:
 ```bash
 gatsby build
 ```
+Sign in to the subscriber portal at <https://my.visualstudio.com>
+<https://my.visualstudio.com> Sign in to the subscriber portal at 
 
 Ez a parancs egy *éles buildet* állít elő. Az összes fájl egy `build/` nevű alkönyvtárba kerül.
 
