@@ -26,7 +26,8 @@ ms.locfileid: "79061868"
 |  do <a href="https://docs.microsoft.com/visualstudio/releases/2019/redistribution" target="blank">Código</a>  
 |  distribuível <a href="https://visualstudio.microsoft.com/license-terms" target="blank">Termos</a>  
 |  de licença <a href="https://blogs.msdn.microsoft.com/developer-tools" target="blank">Blogs</a>  
-|  <a href="https://developercommunity.visualstudio.com/topics/Visual+Studio+2019+Version+16.4.html" target="blank">Problemas conhecidos da versão mais recente</a> |</span><span class="sxs-lookup"><span data-stu-id="c8630-104">
+|  <a href="https://developercommunity.visualstudio.com/topics/Visual+Studio+2019+Version+16.4.html" target="blank">Problemas conhecidos da versão mais recente</a> |
+</span><span class="sxs-lookup"><span data-stu-id="c8630-104">
 | <a href="https://developercommunity.visualstudio.com/topics/visual+studio+2019.html?sort=newest&topics=visual studio 2019" target="blank">Developer Community</a> 
 | <a href="https://docs.microsoft.com/visualstudio/releases/2019/system-requirements" target="blank">System Requirements</a> 
 | <a href="https://docs.microsoft.com/visualstudio/releases/2019/compatibility" target="blank">Compatibility</a> 
