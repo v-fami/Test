@@ -43,7 +43,6 @@ Implement the following best practices when provisioning the virtual array:
 | **Memory type** |Configure as **static memory**. <br></br> Do not use the **dynamic memory** option. | |
 | **Data disk type** |Provision as **dynamically expanding**.<br></br> **Fixed size** takes a long time. <br></br> Do not use the **differencing** option. |Use the **thin provision** option. |
 | **Data disk modification** |Expansion or shrinking is not allowed. An attempt to do so results in the loss of all the local data on device. |Expansion or shrinking is not allowed. An attempt to do so results in the loss of all the local data on device. 
-|  
 
 ### Sizing
 When sizing your StorSimple Virtual Array, consider the following factors:
